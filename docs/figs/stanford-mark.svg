@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="120" viewBox="0 0 360 120" role="img" aria-labelledby="title desc">
+  <title id="title">Stanford mark</title>
+  <desc id="desc">A simple Stanford-style badge with a cardinal red shield and Stanford University text.</desc>
+  <rect width="360" height="120" rx="18" fill="#fffdf8"/>
+  <rect x="12" y="12" width="336" height="96" rx="14" fill="#ffffff" stroke="#e7dfd0"/>
+  <rect x="28" y="24" width="72" height="72" rx="14" fill="#8c1515"/>
+  <path d="M64 38c5 0 8 4 8 9 0 4-2 7-4 10l-1 2h7v7H54v-6l5-7c2-3 4-5 4-7 0-2-1-3-3-3-2 0-5 1-7 3v-7c2-1 6-1 11-1z" fill="#fff7ec"/>
+  <text x="118" y="51" font-family="Times New Roman, Georgia, serif" font-size="15" fill="#8c1515" letter-spacing="2">STANFORD</text>
+  <text x="118" y="78" font-family="Times New Roman, Georgia, serif" font-size="27" fill="#221f1a">University</text>
+</svg>
