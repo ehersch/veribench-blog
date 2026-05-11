@@ -387,7 +387,11 @@ p {
   margin: 1.25rem 0;
   padding: 1rem 1.1rem;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(15, 118, 110, 0.1), rgba(180, 83, 9, 0.08));
+  background: linear-gradient(
+    135deg,
+    rgba(15, 118, 110, 0.1),
+    rgba(180, 83, 9, 0.08)
+  );
   border: 1px solid var(--line);
 }
 

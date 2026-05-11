@@ -3,21 +3,678 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Redirecting to VeriBench Blog</title>
+    <title>VeriBench</title>
     <meta
       name="description"
-      content="Redirects the VeriBench GitHub Pages root to the latest blog entry."
+      content="Starter blog post for the VeriBench GitHub Pages site."
     />
-    <meta http-equiv="refresh" content="0; url=./blog/veribench-launch/" />
-    <link rel="canonical" href="./blog/veribench-launch/" />
-    <script>
-      window.location.replace("./blog/veribench-launch/");
-    </script>
+    <link rel="icon" type="image/png" href="./figs/vb_logo.png" />
+    <link rel="stylesheet" href="./assets/site.css" />
   </head>
   <body>
-    <p>
-      Redirecting to the blog post.
-      <a href="./blog/veribench-launch/">Continue if the redirect does not happen automatically.</a>
-    </p>
+    <header class="topbar">
+      <div class="shell">
+        <a class="brand" href="./">VeriBench</a>
+        <nav class="nav">
+          <a href="https://github.com/brando90/veribench">GitHub</a>
+          <span>Link to preprint [TODO]</span>
+        </nav>
+      </div>
+    </header>
+
+    <main class="content">
+      <article class="shell">
+        <header class="post-header">
+          <div class="eyebrow">Launch Draft</div>
+          <h1 class="post-title-long">VeriBench: An End-to-End
+          Formal Verification Benchmark
+          for AI Coding Agents
+          </h1>
+          <div class="post-byline">
+            <figure class="post-affiliation-mark">
+              <img src="./figs/stanford-university-seal-seeklogo.png" alt="Stanford University mark" />
+            </figure>
+            <p class="post-authors">
+              <span class="post-authors-label">Authors</span>
+              <span class="post-authors-list">
+                Brando Miranda, Srivatsava Daruru, Ethan S Hersch, Zhanke Zhou,
+                Allen Nie, Daneshvar Amrollahi, Leni Aniva, Iddah Mlauzi,
+                Kirill Acharya, Elyas Obbad, Dilara Soylu, Weston Kirk, Zixiao
+                Jolene Wang, Kai Fronsdal, Ying Li, Donald Poindexter Jr,
+                Rakshit Kaushik, Shurui Liu, Yegor Denisov-Blanch, Steven
+                Dillmann, Simon Obstbaum, Santiago Cuellar, John Sarracino,
+                Rylan Schaeffer, Mo Tiwari, Donghyun Lee, Bo Han, Sanmi Koyejo
+              </span>
+            </p>
+          </div>
+          <p class="lede">
+            VeriBench is an <em>end-to-end</em>benchmark for testing whether AI coding agents can do
+            more than write code that looks right. The goal is to push toward
+            agents that can produce code with real, checkable guarantees, and
+            ultimately make code generation more <strong>trustworthy</strong>.
+          </p>
+          <p class="post-meta">May 8, 2026</p>
+          <!-- <figure class="post-header-figure">
+            <img src="./figs/veribench_graphic_2.png" alt="VeriBench overview graphic" />
+          </figure> -->
+
+          <figure class="post-header-figure">
+              <img src="./figs/task_pipeline.png" alt="VeriBench overview graphic" />
+            </figure>
+
+          <!-- <figure class="post-header-figure">
+            <img src="./figs/veribench_graphic_2.png" alt="VeriBench overview graphic (2)" />
+          </figure> -->
+        </header>
+
+        <div class="post-body">
+          <section>
+            <h2>Why this benchmark exists</h2>
+
+            <p>
+              Most coding benchmarks stop at passing tests or matching reference
+              output. That is useful, but it does not tell us whether a model
+              really understands what a program is supposed to do.
+            </p>
+            <p>
+              We have already seen this pattern in mainstream coding benchmarks.
+              HumanEval needed HumanEval+, and SWE-Bench needed stronger
+              follow-on variants like SWE-Bench Verified and SWE-Bench+, because
+              finite test suites kept missing behaviorally important bugs. A
+              model could pass the available tests and still be wrong in ways
+              the benchmark did not observe.
+            </p>
+            <p>
+              VeriBench asks a harder question: can an agent take a Python
+              program, turn it into Lean 4, and state correctness claims that
+              are actually meaningful? In other words, can it produce something
+              that is not just executable, but formally informative?
+            </p>
+            <p>
+              Checking whether a Lean file compiles is relatively easy. Checking
+              whether it is the <em>right</em> Lean formalization is much
+              harder. That is the gap VeriBench is built to expose, and it is
+              exactly why an end-to-end formal benchmark matters.
+            </p>
+          </section>
+
+          <section>
+            <h2>Motivation</h2>
+            <p>
+              Say you're formalizing a simple Python program:
+            </p>
+
+            <div class="code-block python">
+              <pre><code><span class="comment"># my_add.py</span>
+<span class="keyword">def</span> my_add(a: int, b: int) -&gt; int:
+    <span class="keyword">return</span> a + b
+
+<span class="keyword">assert</span> my_add(1, 2) == 3
+<span class="keyword">assert</span> my_add(0, 0) == 0
+<span class="keyword">assert</span> my_add(7, 0) == 7</code></pre>
+            </div>
+
+            <p>
+              Now imagine an LLM gives you this Lean formalization:
+            </p>
+
+            <div class="code-block lean">
+              <pre><code><span class="keyword">namespace</span> MyAdd
+
+<span class="keyword">def</span> myAdd : <span class="type">Nat</span> → <span class="type">Nat</span> → <span class="type">Nat</span> := Nat.add
+
+<span class="comment">/-- A couple of tests pass, so this looks promising. -/</span>
+<span class="keyword">example</span> : myAdd 1 2 = 3 := <span class="keyword">by</span> native_decide
+<span class="keyword">example</span> : myAdd 0 0 = 0 := <span class="keyword">by</span> native_decide
+
+<span class="comment">/-- But the actual semantic claims are left unproved. -/</span>
+<span class="keyword">def</span> Pre (a b : <span class="type">Nat</span>) : <span class="type">Prop</span> := True
+<span class="keyword">def</span> commutativeProp (a b : <span class="type">Nat</span>) : <span class="type">Prop</span> := myAdd a b = myAdd b a
+<span class="keyword">def</span> correctSpec (a b : <span class="type">Nat</span>) : <span class="type">Prop</span> :=
+  myAdd a b = a + b ∧ commutativeProp a b
+
+<span class="keyword">theorem</span> commutativeThm (a b : <span class="type">Nat</span>) :
+  commutativeProp a b := <span class="warning">by sorry</span>
+
+<span class="keyword">theorem</span> correctnessThm (a b : <span class="type">Nat</span>) :
+  Pre a b → correctSpec a b := <span class="warning">by sorry</span>
+
+<span class="keyword">end</span> MyAdd</code></pre>
+            </div>
+
+            <p>
+              At first glance, this looks solid. The definition is there. A few
+              examples pass. The file even has named theorems.
+            </p>
+
+            <p>
+              But the important part is missing. The main claims are left as
+              <code>sorry</code>, which means the hardest reasoning step has
+              not actually been proved. The tests are also shallow, so the file
+              looks formal without really checking much.
+            </p>
+
+            <p class="callout">
+              VeriBench is built to tell apart artifacts that only look formal
+              from artifacts that actually contain meaningful, checkable
+              verification content.
+            </p>
+            <!-- <figure class="post-header-figure">
+              <img src="./figs/good_vs_bad.png" alt="VeriBench overview graphic" />
+            </figure> -->
+          </section>
+
+          <section>
+            <h2>Our Approach</h2>
+            <p>
+              VeriBench treats autoformalization as an end-to-end verification
+              problem, not just a code-writing problem. Starting from Python,
+              an agent must produce a Lean 4 artifact with code, tests,
+              specifications, and theorem statements that say something real
+              about the program.
+            </p>
+            <p>
+              This matters because several very different failure modes can all
+              look similar from far away. A model can write Lean that parses. It
+              can even write Lean that compiles. But that still does not mean it
+              captured the right specification, or that its theorems say enough
+              to be useful.
+            </p>
+            <p>
+              So our evaluation looks beyond text matching. We check whether the
+              file compiles, whether it contains nontrivial formal content, and
+              whether its theorems cover the gold reference specification. When
+              exact comparison is too brittle, we use a calibrated semantic
+              judge to estimate theorem coverage. That gives us a practical way
+              to measure the gap between "looks formal" and "actually says the
+              right thing."
+            </p>
+          </section>
+
+          <section>
+            <h2>Dataset Breakdown</h2>
+            <figure class="post-header-figure">
+              <img src="./figs/dataset_map_2.png" alt="Dataset Map" />
+            </figure>
+            <p>
+              VeriBench is not a tiny toy set. The full release contains 884
+              tasks, with a 602-task canonical core that spans introductory
+              programs, classical algorithms, HumanEval-style functions, Python
+              standard-library code, and a large security-focused subset.
+            </p>
+            <p>
+              In the repo, these show up as familiar splits like
+              <code>easy_set</code>, <code>cs_set</code>,
+              <code>humaneval_set</code>, <code>real_code</code>,
+              <code>security_6858</code>, and <code>security_python</code>.
+              Each Python file is paired with a matching Lean target in a
+              mirrored directory tree, so the benchmark is easy to inspect and
+              extend.
+            </p>
+            <p>
+              On top of the canonical core, the release adds a 282-task
+              high-assurance-inspired expansion across 14 domains, including
+              cryptography, aerospace, medical devices, and compilers. The
+              result is a benchmark that mixes small teaching examples with more
+              realistic and security-sensitive code, which gives a clearer view
+              of where current autoformalization agents hold up and where they
+              fail.
+            </p>
+          </section>
+
+          <section>
+            <h2>What the Data Looks Like</h2>
+            <p>
+              VeriBench is not just a bag of toy one-liners. The benchmark
+              includes the standard benchmark families you would expect, but it
+              also contains a lot of quirky, specification-heavy subsets:
+              distilled RFC kernels, crypto/accounting invariants, and paired
+              safe/unsafe security tasks. Here is a more representative sample
+              of that diversity.
+            </p>
+
+            <p>
+              <strong>EasySet:</strong> small functions with explicit
+              preconditions, tests, and clean correctness targets.
+            </p>
+            <div class="code-block python">
+              <pre><code><span class="comment"># easy_set/1_MyAdd.py</span>
+<span class="keyword">def</span> pre(a: int, b: int) -&gt; bool:
+    <span class="keyword">return</span> isinstance(a, int) <span class="keyword">and</span> isinstance(b, int) <span class="keyword">and</span> a &gt;= 0 <span class="keyword">and</span> b &gt;= 0
+
+<span class="keyword">def</span> prog(a: int, b: int) -&gt; int:
+    <span class="keyword">if</span> <span class="keyword">not</span> pre(a, b):
+        <span class="keyword">raise</span> ValueError(<span class="string">"Inputs must be non-negative integers"</span>)
+    <span class="keyword">return</span> a + b
+
+<span class="keyword">assert</span> prog(1, 2) == 3
+<span class="keyword">assert</span> prog(0, 0) == 0</code></pre>
+            </div>
+
+            <p>
+              <strong>RFC kernels:</strong> tiny protocol predicates distilled
+              from real Python standard-library behavior. These are small, but
+              they are tied to precise external specifications rather than just
+              informal intent.
+            </p>
+            <div class="code-block python">
+              <pre><code><span class="comment"># rfc_set_real/my_uri_pct_triplet_valid.py</span>
+<span class="keyword">def</span> my_uri_pct_triplet_valid(pct: int, hi: int, lo: int) -&gt; bool:
+    <span class="keyword">assert</span> 0 &lt;= pct &lt;= 127 <span class="keyword">and</span> 0 &lt;= hi &lt;= 127 <span class="keyword">and</span> 0 &lt;= lo &lt;= 127
+    <span class="keyword">return</span> pct == 37 <span class="keyword">and</span> (
+        ((48 &lt;= hi &lt;= 57) <span class="keyword">or</span> (65 &lt;= hi &lt;= 70) <span class="keyword">or</span> (97 &lt;= hi &lt;= 102))
+        <span class="keyword">and</span> ((48 &lt;= lo &lt;= 57) <span class="keyword">or</span> (65 &lt;= lo &lt;= 70) <span class="keyword">or</span> (97 &lt;= lo &lt;= 102))
+    )
+
+<span class="keyword">assert</span> my_uri_pct_triplet_valid(37, 65, 48) <span class="keyword">is</span> True
+<span class="keyword">assert</span> my_uri_pct_triplet_valid(38, 65, 48) <span class="keyword">is</span> False</code></pre>
+            </div>
+
+            <p>
+              <strong>Crypto / high-assurance flavored tasks:</strong> problems
+              where the semantics matter because the code is modeling a
+              security-relevant property, protocol rule, or accounting
+              invariant.
+            </p>
+            <div class="code-block python">
+              <pre><code><span class="comment"># crypto_set_real/my_erc20_transfer_balances.py</span>
+<span class="keyword">def</span> my_erc20_transfer_balances(from_balance: int, to_balance: int, amount: int):
+    <span class="keyword">assert</span> from_balance &gt;= 0 <span class="keyword">and</span> to_balance &gt;= 0 <span class="keyword">and</span> amount &gt;= 0
+    <span class="keyword">if</span> amount &lt;= from_balance:
+        <span class="keyword">return</span> from_balance - amount, to_balance + amount
+    <span class="keyword">return</span> from_balance, to_balance
+
+<span class="keyword">assert</span> my_erc20_transfer_balances(10, 0, 3) == (7, 3)
+<span class="keyword">assert</span> my_erc20_transfer_balances(4, 9, 5) == (4, 9)</code></pre>
+            </div>
+
+            <p>
+              The rest of the benchmark fills in the picture: RealCodeSet brings
+              in recognizable Python-library behavior, while HumanEval-style,
+              CS, and SecuritySet tasks add interview problems, classical
+              algorithms, and paired safe/unsafe security examples. The point is
+              not just variety for its own sake. The point is that formal
+              reasoning has to survive across several very different kinds of
+              source code.
+            </p>
+
+            <p class="callout">
+              The benchmark is intentionally heterogeneous. Some tasks look like
+              classroom exercises, some look like distilled RFC semantics, some
+              look like Python-library behavior, and some look like security or
+              cryptography invariants. The point is to test whether an agent can
+              carry formal reasoning across all of those settings, not just one
+              narrow style of task.
+            </p>
+          </section>
+
+          <section>
+            <h2>How We Score a Solution</h2>
+            <!-- <figure class="post-header-figure">
+              <img src="./figs/veribench_eval.png" alt="VeriBench evaluation graphic" />
+            </figure> -->
+            <figure class="post-header-figure">
+              <img src="./figs/score_decomp.png" alt="VeriBench score decomposition" />
+            </figure>
+            <p>
+              The core question in VeriBench is simple: did the agent produce a
+              Lean artifact that both works and says the right things?
+            </p>
+            <p>
+              In the paper, this shows up as the Smooth Conjunctive Score for
+              Code Verification. The friendly version is: we do not want to
+              give full credit for a file that only clears one hurdle. A strong
+              solution needs to survive several checks at once.
+            </p>
+
+            <div class="metric-flow">
+              <div class="metric-card">
+                <div class="metric-step">Step 1</div>
+                <h3>Does the Lean file compile?</h3>
+                <p>
+                  First, the generated artifact has to typecheck. If it does not
+                  compile, it cannot be a usable verification artifact.
+                </p>
+              </div>
+              <div class="metric-card">
+                <div class="metric-step">Step 2</div>
+                <h3>Does it contain real formal content?</h3>
+                <p>
+                  We look for actual tests, specifications, and theorem
+                  statements, not just a thin wrapper around the implementation
+                  or a polished file full of placeholders.
+                </p>
+              </div>
+              <div class="metric-card">
+                <div class="metric-step">Step 3</div>
+                <h3>Do the theorems cover the gold reference?</h3>
+                <p>
+                  The biggest question is whether the agent's claims match the
+                  human-written target. This is where many impressive-looking
+                  outputs still fall short.
+                </p>
+              </div>
+            </div>
+
+            <div class="metric-formula">
+              <strong>Intuition:</strong>
+              A VeriBench score should rise when a solution both compiles and
+              covers the right theorem obligations. If one part is weak, the
+              final score should stay low instead of hiding the failure.
+            </div>
+
+            <p>
+              This is why the score is "smooth" and "conjunctive." Smooth means
+              we can reward partial progress instead of only using pass/fail.
+              Conjunctive means the components reinforce each other: compilation
+              alone is not enough, and semantic coverage alone is not enough if
+              the file does not actually work.
+            </p>
+            <p>
+              For the blog, it is easiest to focus on the three
+              <em>agent-side</em> checks: does the file compile, does it contain
+              real formal content, and do its theorems cover the gold
+              reference? The paper also reports two additional gold-side quality
+              gates, which track whether the benchmark's own reference artifacts
+              test and prove cleanly.
+            </p>
+            <p>
+              That conjunctive design is a deliberate philosophical choice, not
+              just a mathematical convenience. We do not want a benchmark where
+              strong performance on one stage can wash out failure on another.
+              If an agent compiles perfectly but misses the key theorems, that
+              should be a serious penalty. If it states ambitious theorems but
+              cannot produce a usable Lean file, that should also be a serious
+              penalty.
+            </p>
+            <p>
+              VeriBench also separates two different kinds of failure. On the
+              <em>agent side</em>, we track whether the candidate file compiles,
+              whether its theorems are actually discharged, and whether those
+              theorems cover the gold reference. On the <em>gold side</em>, we
+              separately track whether the benchmark's own reference artifacts
+              pass their tests and prove cleanly. This matters because it keeps
+              model weakness from being confused with benchmark-item immaturity.
+            </p>
+            <p>
+              The gold Lean file acts as the reference target. You can think of
+              it as the benchmark's best human-written answer: it has an
+              implementation, a set of theorem obligations, and the structure we
+              want agents to recover. Agent outputs are then measured by how
+              close they get to that reference, especially at the theorem level.
+            </p>
+
+            <div class="callout">
+              The score is trying to reward the thing we actually care about:
+              verified understanding, not just formal-looking syntax.
+            </div>
+          </section>
+
+          <section>
+            <h2>Human-Judge Correlation</h2>
+            <!-- <figure class="post-header-figure">
+              <img src="./figs/llm_calibration.png" alt="Human and LLM judge calibration graphic" />
+            </figure> -->
+
+            <figure class="post-header-figure">
+              <img src="./figs/calibration.png" alt="Human calibration" />
+            </figure>
+            <p>
+              Now suppose we are in the harder setting: we have a Python file,
+              our translator produces one or more candidate Lean files, and we
+              want to know which candidate is better.
+            </p>
+            <p>
+              In practice, that means we need a judge. VeriBench uses an LLM
+              judge for theorem coverage, but we do not want to trust that judge
+              blindly. So we ask a simple question: when humans read the same
+              files, do they broadly agree with the LLM about which candidate
+              better covers the gold reference?
+            </p>
+            <p>
+              The protocol is straightforward. For each item, a human rater sees
+              three things: the Python source, the gold Lean file, and a
+              candidate Lean file. The rater is asked to ignore proof style and
+              focus only on <em>statement coverage</em>: how well does the
+              candidate capture the theorem obligations present in the gold
+              reference?
+            </p>
+
+            <div class="metric-formula">
+              <strong>0-5 coverage rubric</strong>
+              5 = all major gold obligations are covered, 4 = mostly covered, 3
+              = partial coverage with important gaps, 2 = weak coverage, 1 =
+              relevant but very incomplete, 0 = vacuous, broken, or off-target.
+            </div>
+
+            <p>
+              VeriBench then compares those human scores against the LLM judge's
+              scores. In the paper, this is framed as a correlation study: if
+              the LLM judge is useful, higher human scores and higher judge
+              scores should move together. The headline result is a held-out
+              task-split Pearson correlation of about <strong>0.70</strong>,
+              which is not perfect, but strong enough to make the judge
+              practically useful at benchmark scale.
+            </p>
+            <p>
+              That is the key point for the blog: the calibration figure and the
+              0-5 rubric are not just implementation details. They are what make
+              the automatic judge credible enough to use as a scalable proxy for
+              semantic coverage.
+            </p>
+          </section>
+
+          <section>
+            <h2>Results So Far</h2>
+            <p>
+              The short version is that current frontier agents are better at
+              producing Lean files that <em>compile</em> than Lean files that
+              capture the right theorem obligations.
+            </p>
+            <p>
+              On the directly comparable benchmark runs in the paper, Codex
+              leads with an agent-skill score of about <strong>0.29</strong>,
+              Claude Code follows at about <strong>0.22</strong>, and
+              Leanstral v2 lands at about <strong>0.10</strong>. Those are not
+              disaster-level numbers, but they are far from what we would want
+              from an end-to-end formal verification system.
+            </p>
+            <p>
+              The more interesting pattern is deeper than the ranking itself.
+              Codex and Claude Code can often produce files that typecheck
+              cleanly. In other words, they can generate Lean that looks
+              structurally coherent. But when we ask whether the generated
+              theorem statements actually cover the gold reference, the scores
+              remain strikingly low.
+            </p>
+            <p>
+              In the paper, overall theorem coverage stays at or below about
+              <strong>0.156</strong> across the evaluated agents, and for the
+              strongest headline agents it stays at or below about
+              <strong>0.105</strong>. That means the real bottleneck is not just
+              proof search. It is getting the model to state the <em>right
+              claims</em> in the first place.
+            </p>
+            <p>
+              Just as importantly, the gold-side quality term stays roughly
+              stable across agents, at about <strong>0.72 to 0.74</strong>. That
+              means the ordering is not being driven by one model getting an
+              easier slice of the benchmark. The benchmark can still be
+              imperfect, but the main headline is agent-side: current systems
+              are struggling to formulate theorem sets that really match the
+              intended specification.
+            </p>
+
+            <div class="results-table-wrap">
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th>Agent</th>
+                    <th>Compiles<br />(IC1)</th>
+                    <th>No-sorry theorem rate<br />(IC2)</th>
+                    <th>Theorem coverage<br />(TC1)</th>
+                    <th>Agent skill<br />(S_skill)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Codex (GPT-5.4)</td>
+                    <td class="best">1.000</td>
+                    <td class="best">0.237</td>
+                    <td>0.102</td>
+                    <td class="best">0.289</td>
+                  </tr>
+                  <tr>
+                    <td>Claude Code (Sonnet 4.6)</td>
+                    <td class="best">1.000</td>
+                    <td>0.114</td>
+                    <td>0.098</td>
+                    <td>0.224</td>
+                  </tr>
+                  <tr>
+                    <td>Baseline (Sonnet 4.6)</td>
+                    <td>0.310</td>
+                    <td>0.282</td>
+                    <td>0.105</td>
+                    <td>0.209</td>
+                  </tr>
+                  <tr>
+                    <td>Gemini 3-flash preview</td>
+                    <td>0.206</td>
+                    <td>0.043</td>
+                    <td class="best">0.156</td>
+                    <td>0.111</td>
+                  </tr>
+                  <tr>
+                    <td>Leanstral v2</td>
+                    <td>0.292</td>
+                    <td>0.065</td>
+                    <td>0.058</td>
+                    <td>0.103</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+<!-- 
+            <p class="figure-note">
+              Blog version of the headline results table, adapted from
+              <code>paper_latex/NeurIPS_2026_VeriBench/05_evaluation.tex</code>
+              (`tab:scsc-overall`). If you want a paper-faithful screenshot
+              instead, that is the table to grab.
+            </p> -->
+          </section>
+
+          <section>
+            <h2>Main Empirical Takeaway</h2>
+            <p>
+              This is the central result of VeriBench: we see a
+              <strong>theorem-coverage gap</strong>.
+            </p>
+            <p>
+              A model can compile. It can write tests. It can even produce files
+              that look polished and formal. But that does not mean it has
+              recovered the key semantic obligations that a human verifier would
+              write down.
+            </p>
+          </section>
+
+          <section>
+            <h2>On Scalable Oversight</h2>
+
+            <figure class="post-header-figure">
+              <img src="./figs/scalable_oversight.png" alt="Scalable oversight" />
+            </figure>
+            <p>
+              For scalable oversight, this distinction matters. The Lean kernel
+              can check a verification artifact, but the artifact still has to
+              express <strong>the right claims</strong>. As systems scale, humans
+              cannot manually validate every generated formal artifact, so we
+              need agents that can be trusted to formalize the right properties,
+              not just produce compilable Lean.
+            </p>
+            <p>
+              This is also where human-judge correlation comes into play. If an
+              LLM can grade Python &rarr; Lean tasks in a way that tracks human
+              judgments, then it can serve as a scalable proxy for theorem
+              coverage. VeriBench proposes a protocol for collecting those human
+              ratings and correlating them with an automatic judge.
+            </p>
+            <p>
+              We collect judgments from five humans on a subset of the data and
+              find a useful positive correlation, while also seeing that human
+              raters can disagree substantially on individual items. That is one
+              reason task-level aggregation matters: when scores are aggregated
+              per task, the resulting human-LLM agreement becomes more stable
+              and more informative.
+            </p>
+            <p>
+              In that sense, human-calibrated judging is one path toward
+              scalable oversight <strong>without a gold reference for every new
+              candidate artifact</strong>.
+            </p>
+          </section>
+
+          <section>
+            <h2>Conclusion</h2>
+            <p>
+              VeriBench changes the target of code-verification evaluation. It
+              shifts the conversation away from isolated proof search or test
+              passing and toward end-to-end conjunctive grounding: can an agent
+              start from real source code, produce a structured Lean artifact,
+              and state the right theorem obligations in a form that a checker
+              can actually use?
+            </p>
+            <p>
+              The paper's main result is that current systems are not there yet.
+              Frontier agents can often produce Lean files that compile, but
+              theorem coverage remains low. That gap matters because it shows
+              that formal-looking output is still not the same thing as a
+              trustworthy verification artifact.
+            </p>
+            <p>
+              The next step is not just to build stronger proof search. It is to
+              build agents that formulate better specifications, state better
+              theorems, and improve under human-calibrated oversight at scale.
+              If VeriBench is useful, it will be because it gives that next
+              generation of verifiable coding agents a concrete target to beat.
+            </p>
+            <div class="callout">
+              The big lesson is simple: passing the Lean compiler is not the end
+              of the story. In VeriBench, the hard part is often stating the
+              right theorems, not just getting the file to typecheck. That is
+              the core reframing of the benchmark: code-verification evaluation
+              should move from isolated proof search to end-to-end conjunctive
+              grounding, where theorem formulation is treated as a first-class
+              bottleneck.
+            </div>
+          </section>
+
+
+        </div>
+
+        <section class="citation-footer">
+          <h2>Citation</h2>
+          <p>
+            If you use VeriBench in your work, please cite the project using
+            the BibTeX entry below.
+          </p>
+          <div class="code-block python citation">
+            <pre><code>@misc{miranda2026veribench,
+  title        = {VeriBench: An End-to-End Formal Verification Benchmark for AI Coding Agents},
+  author       = {Brando Miranda and Srivatsava Daruru and Ethan S. Hersch and Zhanke Zhou and Allen Nie and Daneshvar Amrollahi and Leni Aniva and Iddah Mlauzi and Kirill Acharya and Elyas Obbad and Dilara Soylu and Weston Kirk and Zixiao Jolene Wang and Kai Fronsdal and Ying Li and Donald Poindexter Jr and Rakshit Kaushik and Shurui Liu and Yegor Denisov-Blanch and Steven Dillmann and Simon Obstbaum and Santiago Cuellar and John Sarracino and Rylan Schaeffer and Mo Tiwari and Donghyun Lee and Bo Han and Sanmi Koyejo},
+  year         = {2026},
+  note         = {Preprint, URL forthcoming}
+}</code></pre>
+          </div>
+        </section>
+      </article>
+    </main>
+
+
+    <!-- <footer class="footer">
+      <div class="shell">
+        Back to the <a href="../../">VeriBench site index</a>.
+      </div>
+    </footer> -->
   </body>
 </html>
