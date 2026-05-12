@@ -58,9 +58,121 @@
             <img src="../../figs/veribench_graphic_2.png" alt="VeriBench overview graphic" />
           </figure> -->
 
-          <figure class="post-header-figure">
-              <img src="../../figs/task_pipeline.png" alt="VeriBench overview graphic" />
-            </figure>
+          <section class="interactive-demo intro-demo" aria-labelledby="artifact-demo-title">
+            <div class="interactive-demo-header">
+              <div>
+                <h2 id="artifact-demo-title">Interactive Example</h2>
+                <p>
+                  Flip through a few VeriBench-style tasks and compare two candidate Lean
+                  artifacts. The point is not just whether they compile, but which one
+                  says more of the right thing.
+                </p>
+              </div>
+              <div class="interactive-badge">Client-side demo</div>
+            </div>
+            <div class="interactive-nav">
+              <div>
+                <div class="interactive-stage-label">Current task</div>
+                <strong id="demo-task-title">EasySet / MyAdd</strong>
+                <div class="interactive-nav-status" id="demo-task-subtitle">Candidate comparison 1 of 3</div>
+              </div>
+              <div class="interactive-nav-controls" aria-label="Example navigation">
+                <button class="interactive-nav-button" type="button" id="demo-prev">&lt; Prev</button>
+                <button class="interactive-nav-button" type="button" id="demo-next">Next &gt;</button>
+              </div>
+            </div>
+            <div class="interactive-layout">
+              <div class="interactive-stack" aria-live="polite">
+                <div class="interactive-stage python-stage">
+                  <span class="interactive-stage-label">Python source</span>
+                  <pre><code id="demo-python-code">def prog(a: int, b: int) -&gt; int:
+    return a + b
+
+assert prog(1, 2) == 3
+assert prog(0, 0) == 0</code></pre>
+                </div>
+                <div class="interactive-candidate-grid">
+                  <div class="interactive-candidate">
+                    <div class="interactive-candidate-header">
+                      <h3 class="interactive-candidate-title" id="demo-a-title-block">
+                        <span>Candidate A</span>
+                        <span id="demo-a-title">Compiles, but shallow</span>
+                      </h3>
+                      <span class="interactive-choice other" id="demo-a-choice">Lower score</span>
+                    </div>
+                    <pre><code id="demo-a-code">def myAdd : Nat → Nat → Nat := Nat.add
+
+example : myAdd 1 2 = 3 := by native_decide
+
+theorem correctnessThm (a b : Nat) :
+  myAdd a b = a + b := by sorry</code></pre>
+                    <div class="interactive-candidate-score">
+                      <span>VeriBench score</span>
+                      <strong id="demo-a-score">0.26</strong>
+                    </div>
+                  </div>
+                  <div class="interactive-candidate">
+                    <div class="interactive-candidate-header">
+                      <h3 class="interactive-candidate-title" id="demo-b-title-block">
+                        <span>Candidate B</span>
+                        <span id="demo-b-title">Stronger specification</span>
+                      </h3>
+                      <span class="interactive-choice best" id="demo-b-choice">Preferred</span>
+                    </div>
+                    <pre><code id="demo-b-code">def myAdd : Nat → Nat → Nat := Nat.add
+
+def correctSpec (a b : Nat) : Prop :=
+  myAdd a b = a + b
+
+theorem correctnessThm (a b : Nat) :
+  correctSpec a b := by simp [correctSpec, myAdd]</code></pre>
+                    <div class="interactive-candidate-score">
+                      <span>VeriBench score</span>
+                      <strong id="demo-b-score">0.82</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="interactive-summary">
+                <div class="interactive-card">
+                  <div class="interactive-summary-head">
+                    <div class="interactive-summary-title">
+                      <div class="interactive-stage-label">Best artifact</div>
+                      <strong id="demo-winner">Candidate B</strong>
+                    </div>
+                    <span class="interactive-pill good" id="demo-pill">Higher theorem coverage</span>
+                  </div>
+                  <p id="demo-summary">
+                    Candidate B wins because it states and proves a meaningful property instead of stopping after a few examples.
+                  </p>
+                </div>
+                <div class="interactive-card">
+                  <h3>What gets measured</h3>
+                  <div class="interactive-metrics">
+                    <div class="interactive-metric">
+                      <span>Python-to-Lean alignment</span>
+                      <strong id="demo-alignment">High</strong>
+                    </div>
+                    <div class="interactive-metric">
+                      <span>Nontrivial theorem content</span>
+                      <strong id="demo-theorems">Strong</strong>
+                    </div>
+                    <div class="interactive-metric">
+                      <span>Coverage of target spec</span>
+                      <strong id="demo-coverage">High</strong>
+                    </div>
+                  </div>
+                  <p class="interactive-note" id="demo-note">
+                    VeriBench is meant to separate "formal-looking" artifacts from ones that actually capture the intended guarantees.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <figure class="post-header-figure intro-figure">
+            <img src="../../figs/task_pipeline.png" alt="VeriBench task pipeline" />
+          </figure>
 
           <!-- <figure class="post-header-figure">
             <img src="../../figs/veribench_graphic_2.png" alt="VeriBench overview graphic (2)" />
@@ -676,5 +788,192 @@
         Back to the <a href="../../">VeriBench site index</a>.
       </div>
     </footer> -->
+    <script>
+      (() => {
+        const demos = [
+          {
+            taskTitle: "EasySet / MyAdd",
+            python: `def prog(a: int, b: int) -> int:
+    return a + b
+
+assert prog(1, 2) == 3
+assert prog(0, 0) == 0`,
+            aTitle: "Compiles, but shallow",
+            aChoice: "Lower score",
+            aChoiceClass: "other",
+            aCode: `def myAdd : Nat → Nat → Nat := Nat.add
+
+example : myAdd 1 2 = 3 := by native_decide
+
+theorem correctnessThm (a b : Nat) :
+  myAdd a b = a + b := by sorry`,
+            aScore: "0.26",
+            bTitle: "Stronger specification",
+            bChoice: "Preferred",
+            bChoiceClass: "best",
+            bCode: `def myAdd : Nat → Nat → Nat := Nat.add
+
+def correctSpec (a b : Nat) : Prop :=
+  myAdd a b = a + b
+
+theorem correctnessThm (a b : Nat) :
+  correctSpec a b := by simp [correctSpec, myAdd]`,
+            bScore: "0.82",
+            winner: "Candidate B",
+            pillText: "Higher theorem coverage",
+            pillClass: "good",
+            summary:
+              "Candidate B wins because it states and proves a meaningful property instead of stopping after a few examples.",
+            alignment: "High",
+            theorems: "Strong",
+            coverage: "High",
+            note:
+              "VeriBench is meant to separate 'formal-looking' artifacts from ones that actually capture the intended guarantees."
+          },
+          {
+            taskTitle: "HumanEval-style / MaxPair",
+            python: `def prog(a: int, b: int) -> int:
+    return a if a >= b else b
+
+assert prog(5, 2) == 5
+assert prog(1, 7) == 7`,
+            aTitle: "Only examples, no general claim",
+            aChoice: "Lower score",
+            aChoiceClass: "other",
+            aCode: `def maxPair (a b : Int) : Int := if a >= b then a else b
+
+example : maxPair 5 2 = 5 := by native_decide
+example : maxPair 1 7 = 7 := by native_decide`,
+            aScore: "0.31",
+            bTitle: "Captures ordering semantics",
+            bChoice: "Preferred",
+            bChoiceClass: "best",
+            bCode: `def maxPair (a b : Int) : Int := if a >= b then a else b
+
+def correctSpec (a b out : Int) : Prop :=
+  out = a \/ out = b
+
+theorem correctnessThm (a b : Int) :
+  correctSpec a b (maxPair a b) := by
+  simp [correctSpec, maxPair]`,
+            bScore: "0.74",
+            winner: "Candidate B",
+            pillText: "Better semantic coverage",
+            pillClass: "warn",
+            summary:
+              "Candidate B still is not a full max specification, but it says materially more than a file that only replayed two test cases.",
+            alignment: "Medium",
+            theorems: "Moderate",
+            coverage: "Partial",
+            note:
+              "This is a middle case: better than example-only output, but still not the complete theorem story you would want."
+          },
+          {
+            taskTitle: "Security-flavored / IsEven",
+            python: `def prog(n: int) -> bool:
+    return n % 2 == 0
+
+assert prog(4) is True
+assert prog(5) is False`,
+            aTitle: "Wrong abstraction",
+            aChoice: "Lower score",
+            aChoiceClass: "other",
+            aCode: `def isEven (n : Nat) : Bool := true
+
+example : isEven 4 = true := by native_decide
+example : isEven 5 = false := by decide`,
+            aScore: "0.08",
+            bTitle: "Connects code to arithmetic meaning",
+            bChoice: "Preferred",
+            bChoiceClass: "best",
+            bCode: `def isEven (n : Nat) : Bool := n % 2 == 0
+
+def correctSpec (n : Nat) : Prop :=
+  isEven n = true ↔ ∃ k, n = 2 * k
+
+theorem correctnessThm (n : Nat) :
+  correctSpec n := by
+  sorry`,
+            bScore: "0.57",
+            winner: "Candidate B",
+            pillText: "Right theorem direction, incomplete proof",
+            pillClass: "good",
+            summary:
+              "Candidate B is preferred even with an incomplete proof because it at least states the right arithmetic claim; candidate A does not model the function correctly.",
+            alignment: "Medium",
+            theorems: "Promising",
+            coverage: "Medium",
+            note:
+              "The benchmark can distinguish between bad code, good theorem statements, and fully checked end-to-end artifacts."
+          }
+        ];
+
+        let currentDemo = 0;
+
+        const taskTitle = document.getElementById("demo-task-title");
+        const taskSubtitle = document.getElementById("demo-task-subtitle");
+        const python = document.getElementById("demo-python-code");
+        const aTitle = document.getElementById("demo-a-title");
+        const aChoice = document.getElementById("demo-a-choice");
+        const aCode = document.getElementById("demo-a-code");
+        const aScore = document.getElementById("demo-a-score");
+        const bTitle = document.getElementById("demo-b-title");
+        const bChoice = document.getElementById("demo-b-choice");
+        const bCode = document.getElementById("demo-b-code");
+        const bScore = document.getElementById("demo-b-score");
+        const winner = document.getElementById("demo-winner");
+        const pill = document.getElementById("demo-pill");
+        const summary = document.getElementById("demo-summary");
+        const alignment = document.getElementById("demo-alignment");
+        const theorems = document.getElementById("demo-theorems");
+        const coverage = document.getElementById("demo-coverage");
+        const note = document.getElementById("demo-note");
+        const prev = document.getElementById("demo-prev");
+        const next = document.getElementById("demo-next");
+
+        function renderDemo(index) {
+          const demo = demos[index];
+          if (!demo) return;
+
+          taskTitle.textContent = demo.taskTitle;
+          taskSubtitle.textContent = `Candidate comparison ${index + 1} of ${demos.length}`;
+          python.textContent = demo.python;
+          aTitle.textContent = demo.aTitle;
+          aChoice.textContent = demo.aChoice;
+          aChoice.className = `interactive-choice ${demo.aChoiceClass}`;
+          aCode.textContent = demo.aCode;
+          aScore.textContent = demo.aScore;
+          bTitle.textContent = demo.bTitle;
+          bChoice.textContent = demo.bChoice;
+          bChoice.className = `interactive-choice ${demo.bChoiceClass}`;
+          bCode.textContent = demo.bCode;
+          bScore.textContent = demo.bScore;
+          winner.textContent = demo.winner;
+          pill.textContent = demo.pillText;
+          pill.className = `interactive-pill ${demo.pillClass}`;
+          summary.textContent = demo.summary;
+          alignment.textContent = demo.alignment;
+          theorems.textContent = demo.theorems;
+          coverage.textContent = demo.coverage;
+          note.textContent = demo.note;
+          currentDemo = index;
+        }
+
+        prev.addEventListener("click", () => {
+          renderDemo((currentDemo - 1 + demos.length) % demos.length);
+        });
+
+        next.addEventListener("click", () => {
+          renderDemo((currentDemo + 1) % demos.length);
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowLeft") prev.click();
+          if (event.key === "ArrowRight") next.click();
+        });
+
+        renderDemo(0);
+      })();
+    </script>
   </body>
 </html>
