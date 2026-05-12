@@ -308,6 +308,57 @@ theorem correctnessThm (a b : Nat) :
             <figure class="post-header-figure">
               <img src="./figs/dataset_map_2.png" alt="Dataset Map" />
             </figure>
+            <div class="dataset-hover" aria-labelledby="dataset-hover-title">
+              <div class="dataset-hover-head">
+                <h3 id="dataset-hover-title">Hover Through The Dataset</h3>
+                <p>
+                  Move across the splits to see representative tasks, what kind of code they
+                  contain, and why that slice matters.
+                </p>
+              </div>
+              <div class="dataset-hover-layout">
+                <div class="dataset-hover-list" role="list" aria-label="Dataset splits">
+                  <button class="dataset-hover-item active" type="button" data-dataset-key="easy_set">
+                    <strong><code>easy_set</code></strong>
+                    <span>Small functions with explicit preconditions and direct correctness targets.</span>
+                  </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="humaneval_set">
+                    <strong><code>humaneval_set</code></strong>
+                    <span>Familiar coding-benchmark style tasks with more open-ended functional behavior.</span>
+                  </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="real_code">
+                    <strong><code>real_code</code></strong>
+                    <span>Standard-library and practical code patterns rather than only classroom examples.</span>
+                  </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="security_sets">
+                    <strong><code>security_*</code></strong>
+                    <span>Safe/unsafe and security-oriented tasks where the specification really matters.</span>
+                  </button>
+                </div>
+                <div class="dataset-hover-preview" aria-live="polite">
+                  <div class="dataset-hover-meta">
+                    <span class="dataset-hover-badge" id="dataset-badge">Intro / explicit specs</span>
+                    <span class="dataset-hover-count" id="dataset-count">Representative slice</span>
+                  </div>
+                  <h4 id="dataset-title"><code>easy_set</code>: clean benchmark primitives</h4>
+                  <p id="dataset-description">
+                    This split makes it easy to see whether a model can track a straightforward precondition,
+                    executable behavior, and a crisp theorem target all at once.
+                  </p>
+                  <div class="code-block python">
+                    <pre><code id="dataset-code"><span class="comment"># easy_set/1_MyAdd.py</span>
+<span class="keyword">def</span> pre(a: int, b: int) -&gt; bool:
+    <span class="keyword">return</span> a &gt;= 0 <span class="keyword">and</span> b &gt;= 0
+
+<span class="keyword">def</span> prog(a: int, b: int) -&gt; int:
+    <span class="keyword">return</span> a + b</code></pre>
+                  </div>
+                  <div class="dataset-hover-note" id="dataset-note">
+                    Good for seeing if an autoformalizer can move from toy Python into simple but meaningful specifications.
+                  </div>
+                </div>
+              </div>
+            </div>
             <p>
               VeriBench is not a tiny toy set. The full release contains 884
               tasks, with a 602-task canonical core that spans introductory
@@ -930,6 +981,75 @@ theorem correctnessThm (n : Nat) :
         const note = document.getElementById("demo-note");
         const prev = document.getElementById("demo-prev");
         const next = document.getElementById("demo-next");
+        const datasetItems = document.querySelectorAll("[data-dataset-key]");
+        const datasetBadge = document.getElementById("dataset-badge");
+        const datasetCount = document.getElementById("dataset-count");
+        const datasetTitle = document.getElementById("dataset-title");
+        const datasetDescription = document.getElementById("dataset-description");
+        const datasetCode = document.getElementById("dataset-code");
+        const datasetNote = document.getElementById("dataset-note");
+        const datasetDemos = {
+          easy_set: {
+            badge: "Intro / explicit specs",
+            count: "Representative slice",
+            title: "<code>easy_set</code>: clean benchmark primitives",
+            description:
+              "This split makes it easy to see whether a model can track a straightforward precondition, executable behavior, and a crisp theorem target all at once.",
+            code: `<span class="comment"># easy_set/1_MyAdd.py</span>
+<span class="keyword">def</span> pre(a: int, b: int) -&gt; bool:
+    <span class="keyword">return</span> a &gt;= 0 <span class="keyword">and</span> b &gt;= 0
+
+<span class="keyword">def</span> prog(a: int, b: int) -&gt; int:
+    <span class="keyword">return</span> a + b`,
+            note:
+              "Good for seeing if an autoformalizer can move from toy Python into simple but meaningful specifications."
+          },
+          humaneval_set: {
+            badge: "Benchmark transfer",
+            count: "HumanEval-style functions",
+            title: "<code>humaneval_set</code>: familiar coding tasks",
+            description:
+              "These are closer to mainstream coding-benchmark prompts, which makes them useful for checking whether benchmark skill transfers into formalization skill.",
+            code: `<span class="comment"># humaneval_set/max_pair.py</span>
+<span class="keyword">def</span> prog(a: int, b: int) -&gt; int:
+    <span class="keyword">return</span> a <span class="keyword">if</span> a &gt;= b <span class="keyword">else</span> b
+
+<span class="keyword">assert</span> prog(5, 2) == 5
+<span class="keyword">assert</span> prog(1, 7) == 7`,
+            note:
+              "Useful for testing whether a model can go beyond passing examples and state a general property over a familiar function."
+          },
+          real_code: {
+            badge: "Library behavior",
+            count: "Python standard-library flavored",
+            title: "<code>real_code</code>: practical code paths",
+            description:
+              "This slice pushes past toy functions into code patterns that resemble what people actually read in a real repository.",
+            code: `<span class="comment"># real_code/rfc_guard.py</span>
+<span class="keyword">def</span> prog(label: str) -&gt; bool:
+    <span class="keyword">return</span> len(label) &lt;= 63 <span class="keyword">and</span> label.isascii()
+
+<span class="keyword">assert</span> prog("stanford") <span class="keyword">is</span> True
+<span class="keyword">assert</span> prog("x" * 64) <span class="keyword">is</span> False`,
+            note:
+              "These tasks matter because the intended behavior is tied to external conventions, not just informal intuition."
+          },
+          security_sets: {
+            badge: "High-stakes semantics",
+            count: "Safe/unsafe security tasks",
+            title: "<code>security_*</code>: when the spec really matters",
+            description:
+              "This part of the dataset includes security-sensitive code where shallow tests can miss exactly the sort of bug a benchmark should care about.",
+            code: `<span class="comment"># security_python/is_sanitized.py</span>
+<span class="keyword">def</span> prog(token: str) -&gt; bool:
+    <span class="keyword">return</span> token.isalnum() <span class="keyword">and</span> len(token) &lt; 17
+
+<span class="keyword">assert</span> prog("safeToken7") <span class="keyword">is</span> True
+<span class="keyword">assert</span> prog("DROP_TABLE!") <span class="keyword">is</span> False`,
+            note:
+              "This is where formal statements can be much more valuable than a thin example suite."
+          }
+        };
 
         function renderDemo(index) {
           const demo = demos[index];
@@ -972,7 +1092,31 @@ theorem correctnessThm (n : Nat) :
           if (event.key === "ArrowRight") next.click();
         });
 
+        function renderDataset(key) {
+          const demo = datasetDemos[key];
+          if (!demo) return;
+
+          datasetBadge.textContent = demo.badge;
+          datasetCount.textContent = demo.count;
+          datasetTitle.innerHTML = demo.title;
+          datasetDescription.textContent = demo.description;
+          datasetCode.innerHTML = demo.code;
+          datasetNote.textContent = demo.note;
+
+          datasetItems.forEach((item) => {
+            item.classList.toggle("active", item.dataset.datasetKey === key);
+          });
+        }
+
+        datasetItems.forEach((item) => {
+          const key = item.dataset.datasetKey;
+          item.addEventListener("mouseenter", () => renderDataset(key));
+          item.addEventListener("focus", () => renderDataset(key));
+          item.addEventListener("click", () => renderDataset(key));
+        });
+
         renderDemo(0);
+        renderDataset("easy_set");
       })();
     </script>
   </body>

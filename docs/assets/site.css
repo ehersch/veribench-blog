@@ -754,6 +754,144 @@ p {
   margin-bottom: 0.35rem;
 }
 
+.dataset-hover {
+  margin: 1.25rem 0 1.5rem;
+  padding: 1.15rem;
+  border-radius: 22px;
+  background: rgba(255, 252, 245, 0.92);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.dataset-hover-head {
+  margin-bottom: 0.9rem;
+}
+
+.dataset-hover-head h3,
+.dataset-hover-head p {
+  margin: 0;
+}
+
+.dataset-hover-head h3 {
+  font-size: 1.08rem;
+  margin-bottom: 0.35rem;
+}
+
+.dataset-hover-head p {
+  color: var(--muted);
+}
+
+.dataset-hover-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.dataset-hover-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.dataset-hover-item {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.dataset-hover-item:hover,
+.dataset-hover-item:focus-visible,
+.dataset-hover-item.active {
+  transform: translateY(-1px);
+  border-color: rgba(15, 118, 110, 0.38);
+  background: rgba(15, 118, 110, 0.08);
+  outline: none;
+}
+
+.dataset-hover-item strong,
+.dataset-hover-item span {
+  display: block;
+}
+
+.dataset-hover-item strong {
+  margin-bottom: 0.28rem;
+  font-size: 1rem;
+}
+
+.dataset-hover-item span {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.dataset-hover-preview {
+  padding: 1rem 1.05rem;
+  border-radius: 18px;
+  background: linear-gradient(
+    145deg,
+    rgba(15, 118, 110, 0.09),
+    rgba(180, 83, 9, 0.08)
+  );
+  border: 1px solid var(--line);
+}
+
+.dataset-hover-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.dataset-hover-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.58rem;
+  border-radius: 999px;
+  background: rgba(19, 78, 74, 0.1);
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.dataset-hover-count {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.dataset-hover-preview h4,
+.dataset-hover-preview p {
+  margin: 0;
+}
+
+.dataset-hover-preview h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.45rem;
+}
+
+.dataset-hover-preview p {
+  color: #3d3e37;
+}
+
+.dataset-hover-preview .code-block {
+  margin-bottom: 0.95rem;
+}
+
+.dataset-hover-note {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
 .prompt-box {
   margin-top: 1rem;
   padding: 1rem 1.1rem;
@@ -849,6 +987,7 @@ code {
   .post-grid,
   .cards,
   .metric-flow,
+  .dataset-hover-layout,
   .interactive-layout {
     grid-template-columns: 1fr;
   }
