@@ -211,7 +211,7 @@ h1 {
 .post-byline {
   display: grid;
   gap: 1rem;
-  max-width: 1080px;
+  max-width: 760px;
   margin: 0 auto 1.35rem;
   text-align: center;
 }
@@ -260,6 +260,10 @@ h1 {
 
 .post-byline .post-authors {
   text-align: center;
+}
+
+.post-header > .lede {
+  text-align: left;
 }
 
 .post-authors-label {
