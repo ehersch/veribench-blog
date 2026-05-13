@@ -225,13 +225,14 @@ h1 {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.85rem;
+  align-items: center;
 }
 
-.post-affiliation-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 140px;
+.post-affiliation-logos img {
+  display: block;
+  width: auto;
+  height: 68px;
+  margin: 0 auto;
   padding: 0.55rem 0.7rem;
   border-radius: 16px;
   background: var(--surface);
@@ -239,23 +240,22 @@ h1 {
   box-shadow: var(--shadow);
 }
 
-.post-affiliation-logo img {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin: 0 auto;
+html:not([data-theme="dark"]) .post-affiliation-logos img {
+  transform: scale(1.12);
+  transform-origin: center;
 }
 
-.post-affiliation-logo.stanford img {
-  max-width: 92px;
+.post-affiliation-logos img.stanford {
+  height: 82px;
+  max-width: 190px;
 }
 
-.post-affiliation-logo.stair img {
-  max-width: 132px;
+.post-affiliation-logos img.stair {
+  max-width: 120px;
 }
 
-.post-affiliation-logo.sail img {
-  max-width: 170px;
+.post-affiliation-logos img.sail {
+  max-width: 250px;
 }
 
 .post-byline .post-authors {
@@ -1075,6 +1075,14 @@ html[data-theme="dark"] .dataset-hover-badge {
 
 html[data-theme="dark"] .post-read-time {
   background: rgba(163, 236, 227, 0.08);
+}
+
+html[data-theme="dark"] .post-affiliation-logos img {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .dataset-hover-preview .code-block {
