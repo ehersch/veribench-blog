@@ -331,41 +331,41 @@ theorem correctnessThm (a b : Nat) :
             </figure>
             <div class="dataset-hover" aria-labelledby="dataset-hover-title">
               <div class="dataset-hover-head">
-                <h3 id="dataset-hover-title">Hover Through The Dataset</h3>
+                <h3 id="dataset-hover-title">Explore The Dataset</h3>
                 <p>
-                  Move across the splits to see representative tasks, what kind of code they
-                  contain, and why that slice matters.
+                  Click a task to see real Python source, what makes its formal specification non-trivial,
+                  and why a shallow theorem would miss the point.
                 </p>
               </div>
               <div class="dataset-hover-layout">
                 <div class="dataset-hover-list" role="list" aria-label="Dataset splits">
-                  <button class="dataset-hover-item active" type="button" data-dataset-key="easy_set">
-                    <strong><code>easy_set</code></strong>
-                    <span>Small functions with explicit preconditions and direct correctness targets.</span>
+                  <button class="dataset-hover-item active" type="button" data-dataset-key="quicksort">
+                    <strong><code>Quicksort</code></strong>
+                    <span>Sortedness <em>and</em> permutation completeness — two independent proof obligations.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="humaneval_set">
-                    <strong><code>humaneval_set</code></strong>
-                    <span>Familiar coding-benchmark style tasks with more open-ended functional behavior.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="edit_distance">
+                    <strong><code>Edit Distance</code></strong>
+                    <span>DP recurrence with base cases, monotonicity, and optimality.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="real_code">
-                    <strong><code>real_code</code></strong>
-                    <span>Standard-library and practical code patterns rather than only classroom examples.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="shell_injection">
+                    <strong><code>Shell Injection</code></strong>
+                    <span>Safe vs. unsafe: the formal spec must distinguish them where tests cannot.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="security_sets">
-                    <strong><code>security_*</code></strong>
-                    <span>Safe/unsafe and security-oriented tasks where the specification really matters.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="erc20">
+                    <strong><code>ERC-20 Allowance</code></strong>
+                    <span>Conservation law: infinite approval is stable; finite approval decreases.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="gov_cert">
-                    <strong><code>gov_cert</code></strong>
-                    <span>Supply-chain attestation and high-assurance multi-field predicates.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="uri_pct">
+                    <strong><code>URI % Encoding</code></strong>
+                    <span>RFC 3986: three independent character-class conditions that must all hold.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="critical_infra">
-                    <strong><code>critical_infra</code></strong>
-                    <span>Distributed systems predicates: circuit breakers, quorum, rate gates.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="median_high">
+                    <strong><code>Median (high)</code></strong>
+                    <span>Piecewise mathematical definition: odd vs. even length, index correctness.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="aerospace">
-                    <strong><code>aerospace</code></strong>
-                    <span>Flight-control and safety-critical predicates with non-trivial rate bounds.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="dijkstra">
+                    <strong><code>Dijkstra</code></strong>
+                    <span>Min-distance invariant over a priority queue — requires inductive reasoning.</span>
                   </button>
                 </div>
                 <div class="dataset-hover-preview" aria-live="polite">
@@ -1167,115 +1167,152 @@ theorem safety_prop (dst src : List Nat) :
         const datasetCode = document.getElementById("dataset-code");
         const datasetNote = document.getElementById("dataset-note");
         const datasetDemos = {
-          easy_set: {
-            badge: "Intro / explicit specs",
-            count: "Representative slice",
-            title: "<code>easy_set</code>: clean benchmark primitives",
+          quicksort: {
+            badge: "CS algorithms",
+            count: "cs_set — 13 classical algorithms",
+            title: "<code>cs_set / quick_sort</code>: sortedness + permutation",
             description:
-              "This split makes it easy to see whether a model can track a straightforward precondition, executable behavior, and a crisp theorem target all at once.",
-            code: `<span class="comment"># easy_set/1_MyAdd.py</span>
-<span class="keyword">def</span> pre(a: int, b: int) -&gt; bool:
-    <span class="keyword">return</span> a &gt;= 0 <span class="keyword">and</span> b &gt;= 0
+              "Quicksort is easy to implement but hard to verify. The formal spec needs two independent theorems: the output is sorted, AND it contains exactly the same elements as the input. A shallow theorem that only checks sortedness lets an implementation that returns an empty list pass.",
+            code: `<span class="comment"># cs_set/quick_sort.py</span>
+<span class="keyword">def</span> pre(arr: List[int]) -&gt; bool:
+    <span class="keyword">return</span> isinstance(arr, list) <span class="keyword">and</span> all(isinstance(x, int) <span class="keyword">for</span> x <span class="keyword">in</span> arr)
 
-<span class="keyword">def</span> prog(a: int, b: int) -&gt; int:
-    <span class="keyword">return</span> a + b`,
-            note:
-              "Good for seeing if an autoformalizer can move from toy Python into simple but meaningful specifications."
-          },
-          humaneval_set: {
-            badge: "Benchmark transfer",
-            count: "HumanEval-style functions",
-            title: "<code>humaneval_set</code>: familiar coding tasks",
-            description:
-              "These are closer to mainstream coding-benchmark prompts, which makes them useful for checking whether benchmark skill transfers into formalization skill.",
-            code: `<span class="comment"># humaneval_set/max_pair.py</span>
-<span class="keyword">def</span> prog(a: int, b: int) -&gt; int:
-    <span class="keyword">return</span> a <span class="keyword">if</span> a &gt;= b <span class="keyword">else</span> b
+<span class="keyword">def</span> quick_sort(arr: List[int]) -&gt; List[int]:
+    <span class="keyword">if</span> len(arr) &lt;= 1: <span class="keyword">return</span> arr.copy()
+    pivot = arr[-1]
+    left  = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr[:-1] <span class="keyword">if</span> x &lt;= pivot]
+    right = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr[:-1] <span class="keyword">if</span> x &gt; pivot]
+    <span class="keyword">return</span> quick_sort(left) + [pivot] + quick_sort(right)
 
-<span class="keyword">assert</span> prog(5, 2) == 5
-<span class="keyword">assert</span> prog(1, 7) == 7`,
+<span class="comment"># Gold theorems needed:</span>
+<span class="comment">#   sorted_prop:      ∀ i, result[i] ≤ result[i+1]</span>
+<span class="comment">#   permutation_prop: result.toMultiset = input.toMultiset</span>`,
             note:
-              "Useful for testing whether a model can go beyond passing examples and state a general property over a familiar function."
+              "An agent that only proves sortedness scores partially. One that also proves the permutation property — no element lost or invented — scores fully. This split measures whether the agent understands what 'correct sort' actually means."
           },
-          real_code: {
-            badge: "Library behavior",
-            count: "Python standard-library flavored",
-            title: "<code>real_code</code>: practical code paths",
+          edit_distance: {
+            badge: "Dynamic programming",
+            count: "cs_set — Levenshtein distance",
+            title: "<code>cs_set / edit_distance</code>: DP recurrence",
             description:
-              "This slice pushes past toy functions into code patterns that resemble what people actually read in a real repository.",
-            code: `<span class="comment"># real_code/rfc_guard.py</span>
-<span class="keyword">def</span> prog(label: str) -&gt; bool:
-    <span class="keyword">return</span> len(label) &lt;= 63 <span class="keyword">and</span> label.isascii()
+              "Edit distance requires specifying the full DP recurrence, not just the final answer. The gold theorems capture the base cases (empty string = pure insertions/deletions), the recurrence relation (match vs. substitute), and optimality (no sequence of fewer edits exists).",
+            code: `<span class="comment"># cs_set/edit_distance.py — Levenshtein distance</span>
+<span class="keyword">def</span> edit_distance(s1: str, s2: str) -&gt; int:
+    m, n = len(s1), len(s2)
+    dp = [[0]*(n+1) <span class="keyword">for</span> _ <span class="keyword">in</span> range(m+1)]
+    <span class="keyword">for</span> i <span class="keyword">in</span> range(m+1): dp[i][0] = i   <span class="comment"># i deletions</span>
+    <span class="keyword">for</span> j <span class="keyword">in</span> range(n+1): dp[0][j] = j   <span class="comment"># j insertions</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> range(1, m+1):
+        <span class="keyword">for</span> j <span class="keyword">in</span> range(1, n+1):
+            cost = 0 <span class="keyword">if</span> s1[i-1]==s2[j-1] <span class="keyword">else</span> 1
+            dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+    <span class="keyword">return</span> dp[m][n]
 
-<span class="keyword">assert</span> prog("stanford") <span class="keyword">is</span> True
-<span class="keyword">assert</span> prog("x" * 64) <span class="keyword">is</span> False`,
+<span class="comment"># assert edit_distance("kitten","sitting") == 3</span>`,
             note:
-              "These tasks matter because the intended behavior is tied to external conventions, not just informal intuition."
+              "The theorem for edit distance cannot be stated as a single closed-form equation — it requires capturing the recurrence itself. This is one of the hardest formalization targets in the cs_set."
           },
-          security_sets: {
-            badge: "High-stakes semantics",
-            count: "Safe/unsafe security tasks",
-            title: "<code>security_*</code>: when the spec really matters",
+          shell_injection: {
+            badge: "Security — safe/unsafe pair",
+            count: "security_python — 6 injection pairs",
+            title: "<code>security_python</code>: shell injection",
             description:
-              "This part of the dataset includes security-sensitive code where shallow tests can miss exactly the sort of bug a benchmark should care about.",
-            code: `<span class="comment"># security_python/is_sanitized.py</span>
-<span class="keyword">def</span> prog(token: str) -&gt; bool:
-    <span class="keyword">return</span> token.isalnum() <span class="keyword">and</span> len(token) &lt; 17
+              "Both functions return the same output on benign input. The formal spec must distinguish them: the safe version's safety property holds for all inputs, including adversarial ones. Tests on benign input alone cannot separate them.",
+            code: `<span class="comment"># UNSAFE — shell=True, user input injected into command string</span>
+<span class="keyword">def</span> list_files(path: str) -&gt; str:
+    cmd = f<span class="string">"ls {path}"</span>                    <span class="comment"># "; rm -rf /" works here</span>
+    <span class="keyword">return</span> subprocess.run(cmd, shell=<span class="keyword">True</span>, ...).stdout
 
-<span class="keyword">assert</span> prog("safeToken7") <span class="keyword">is</span> True
-<span class="keyword">assert</span> prog("DROP_TABLE!") <span class="keyword">is</span> False`,
+<span class="comment"># SAFE — shell=False, argv list, no shell metachar parsing</span>
+<span class="keyword">def</span> list_files_safe(path: str) -&gt; str:
+    cmd = [<span class="string">"ls"</span>, <span class="string">"--"</span>, path]               <span class="comment"># path is never parsed</span>
+    <span class="keyword">return</span> subprocess.run(cmd, shell=<span class="keyword">False</span>, ...).stdout
+
+<span class="comment"># Gold theorem: ∀ path, no_shell_metachar_execution(list_files_safe(path))</span>`,
             note:
-              "This is where formal statements can be much more valuable than a thin example suite."
+              "Unit tests on 'safeToken' and 'DROP TABLE' pass for both versions. Only a formal safety property — one that quantifies over ALL inputs including adversarial ones — tells them apart."
           },
-          gov_cert: {
-            badge: "Gov / Supply-chain",
-            count: "14 high-assurance domains",
-            title: "<code>gov_cert</code>: supply-chain attestation",
+          erc20: {
+            badge: "Crypto / DeFi",
+            count: "crypto_set_real — ERC-20 invariants",
+            title: "<code>crypto_set_real</code>: ERC-20 infinite allowance",
             description:
-              "SLSA-inspired tasks where the specification must capture multi-field acceptance criteria: file existence, digest matching, and size bounds all at once.",
-            code: `<span class="comment"># gov_cert / my_slsa_multi_field_check.py</span>
-<span class="keyword">def</span> my_slsa_multi_field_check(
-    file_exists: bool, computed_digest: int,
-    expected_digest: int, file_size: int, max_size: int
-) -&gt; bool:
-    <span class="keyword">assert</span> max_size &gt; 0
-    <span class="keyword">return</span> (file_exists <span class="keyword">and</span>
-            computed_digest == expected_digest <span class="keyword">and</span>
-            file_size &lt;= max_size)`,
+              "ERC-20 tokens use a sentinel value (MAX_UINT) to represent infinite approval. Spending against an infinite allowance must not decrease it. The formal spec requires a case split that breaks ordinary subtraction semantics.",
+            code: `<span class="comment"># crypto_set_real/my_erc20_infinite_allowance_after.py</span>
+MAX_UINT = 1000  <span class="comment"># sentinel for "infinite" approval</span>
+
+<span class="keyword">def</span> my_erc20_infinite_allowance_after(allowance: int, spend: int) -&gt; int:
+    <span class="keyword">assert</span> 0 &lt;= allowance &lt;= MAX_UINT <span class="keyword">and</span> 0 &lt;= spend &lt;= MAX_UINT
+    <span class="keyword">if</span> allowance == MAX_UINT:   <span class="keyword">return</span> MAX_UINT  <span class="comment"># stable</span>
+    <span class="keyword">if</span> spend &lt;= allowance:      <span class="keyword">return</span> allowance - spend
+    <span class="keyword">return</span> allowance            <span class="comment"># underflow protection</span>
+
+<span class="comment"># Gold theorems:</span>
+<span class="comment">#   infinite_stable: allowance=MAX_UINT → result=MAX_UINT</span>
+<span class="comment">#   no_underflow:    result ≤ allowance  (always)</span>`,
             note:
-              "These tasks require three independent formal conditions to hold simultaneously — any shallow theorem that omits one condition lets wrong implementations through."
+              "An agent that formalizes only the normal subtraction path will miss both the infinite-sentinel invariant and the underflow guard — two safety properties that matter in production DeFi code."
           },
-          critical_infra: {
-            badge: "Critical Infra",
-            count: "Distributed systems invariants",
-            title: "<code>critical_infra</code>: circuit breaker semantics",
+          uri_pct: {
+            badge: "RFC / Protocol",
+            count: "rfc_set_real — 15 RFC kernels",
+            title: "<code>rfc_set_real</code>: URI percent-encoding (RFC 3986)",
             description:
-              "Predicates from load balancers, message queues, and service meshes. The circuit breaker example combines a Bool arming flag with a cross-multiplied percentage threshold — two genuinely independent proof obligations.",
-            code: `<span class="comment"># critical_infra / my_circuit_breaker_rate.py</span>
-<span class="keyword">def</span> my_circuit_breaker_rate(
-    enabled: bool, failures: int,
-    total: int, error_rate_pct: int
-) -&gt; bool:
-    <span class="keyword">assert</span> total &gt; 0 <span class="keyword">and</span> 0 &lt;= error_rate_pct &lt;= 100
-    <span class="keyword">return</span> enabled <span class="keyword">and</span> (failures * 100 &gt;= total * error_rate_pct)`,
+              "Validating a percent-encoded triplet requires three independent conditions: the '%' byte, a valid hex digit in the high nibble, and a valid hex digit in the low nibble. Any theorem that omits one condition accepts invalid encodings.",
+            code: `<span class="comment"># rfc_set_real/my_uri_pct_triplet_valid.py — RFC 3986 §2.1</span>
+<span class="keyword">def</span> my_uri_pct_triplet_valid(pct: int, hi: int, lo: int) -&gt; bool:
+    <span class="keyword">assert</span> 0 &lt;= pct &lt;= 127 <span class="keyword">and</span> 0 &lt;= hi &lt;= 127 <span class="keyword">and</span> 0 &lt;= lo &lt;= 127
+    <span class="keyword">return</span> (
+        pct == 37   <span class="comment"># '%' must be ASCII 37</span>
+        <span class="keyword">and</span> ((48&lt;=hi&lt;=57) <span class="keyword">or</span> (65&lt;=hi&lt;=70) <span class="keyword">or</span> (97&lt;=hi&lt;=102))
+        <span class="keyword">and</span> ((48&lt;=lo&lt;=57) <span class="keyword">or</span> (65&lt;=lo&lt;=70) <span class="keyword">or</span> (97&lt;=lo&lt;=102))
+    )
+<span class="comment"># valid: (37,65,48)='%A0'  invalid: (37,71,48)='%G0' (G not hex)</span>`,
             note:
-              "A theorem that only captures the Bool flag misses the percentage arithmetic; one that only captures the arithmetic misses the arming condition. Both must be in the spec."
+              "RFC tasks are small but specification-rich. Three disjunctive ranges per nibble, all conjoined, means at least six independent conditions in the gold theorem. An agent that states only the pct==37 check scores at most 33%."
           },
-          aerospace: {
-            badge: "Aerospace / Safety",
-            count: "NASA F Prime–inspired tasks",
-            title: "<code>aerospace</code>: attitude rate limiting",
+          median_high: {
+            badge: "Standard library",
+            count: "realcode_set — Python statistics module",
+            title: "<code>realcode_set</code>: statistics.median_high",
             description:
-              "Flight control predicates where a rate-limiter must accept only attitude changes within a certified bound. The formal specification must state the absolute-difference condition, not just the nominal path.",
-            code: `<span class="comment"># aerospace / my_attitude_rate_limit.py</span>
-<span class="keyword">def</span> my_attitude_rate_limit(
-    curr_deg: int, new_deg: int, max_rate: int
-) -&gt; bool:
-    <span class="keyword">assert</span> 0 &lt; max_rate
-    delta = abs(new_deg - curr_deg)
-    <span class="keyword">return</span> delta &lt;= max_rate`,
+              "The high median is the upper of the two middle elements for even-length lists. Formalizing it correctly requires a piecewise definition, an index proof, and showing the result is an element of the input — not a computed average.",
+            code: `<span class="comment"># realcode_set/29_statistics_median_high.py</span>
+<span class="keyword">def</span> pre(data) -&gt; bool:
+    <span class="keyword">return</span> len(data) &gt; 0 <span class="keyword">and</span> all(isinstance(x, numbers.Number) <span class="keyword">for</span> x <span class="keyword">in</span> data)
+
+<span class="keyword">def</span> median_high(data: List) -&gt; numbers.Number:
+    data = sorted(data)
+    <span class="keyword">return</span> data[len(data) // 2]  <span class="comment"># always the upper-middle</span>
+
+<span class="comment"># [1,3,5]   → data[1] = 3  (odd: centre)</span>
+<span class="comment"># [1,3,5,7] → data[2] = 5  (even: upper of {3,5})</span>
+<span class="comment"># Gold: result ∈ input  ∧  ∀ x ∈ input, x &gt; result → count(input,x) &lt; count(input, ≤result)</span>`,
             note:
-              "The absolute-difference condition requires a piecewise proof — you cannot close it with a single omega call. Tasks like this test whether the agent understands case analysis."
+              "Unlike mean or variance, median_high returns an actual element of the input. The gold spec must state both the index formula and the membership guarantee — an agent that only proves the index formula misses the structural constraint."
+          },
+          dijkstra: {
+            badge: "Graph algorithms",
+            count: "cs_set — Dijkstra shortest path",
+            title: "<code>cs_set / dijkstra</code>: min-distance invariant",
+            description:
+              "Dijkstra correctness requires an inductive invariant over the priority queue: every node popped has the optimal distance, and no future relaxation can improve it. Proving this in Lean requires reasoning about the heap structure and distance bounds simultaneously.",
+            code: `<span class="comment"># cs_set/dijkstra.py — Dijkstra with non-negative weights</span>
+<span class="keyword">def</span> pre(graph, start, target) -&gt; bool:
+    <span class="keyword">return</span> all(w &gt;= 0 <span class="keyword">for</span> edges <span class="keyword">in</span> graph <span class="keyword">for</span> _,w <span class="keyword">in</span> edges)
+
+<span class="keyword">def</span> dijkstra(graph, start: int, target: int) -&gt; Optional[int]:
+    pq, dists = [(0, start)], {start: 0}
+    <span class="keyword">while</span> pq:
+        d, u = heapq.heappop(pq)
+        <span class="keyword">if</span> u == target: <span class="keyword">return</span> d
+        <span class="keyword">if</span> d &gt; dists.get(u, inf): <span class="keyword">continue</span>  <span class="comment"># stale entry</span>
+        <span class="keyword">for</span> v, w <span class="keyword">in</span> graph[u]:
+            <span class="keyword">if</span> (nd := d+w) &lt; dists.get(v, inf):
+                dists[v]=nd; heapq.heappush(pq,(nd,v))
+    <span class="keyword">return</span> None`,
+            note:
+              "The key Lean theorem is: if Dijkstra returns d for target, then no path from start to target has weight less than d. This requires the non-negative weight Pre — the theorem is false without it."
           }
         };
 
@@ -1358,7 +1395,7 @@ theorem safety_prop (dst src : List Nat) :
         });
 
         renderDemo(0);
-        renderDataset("easy_set");
+        renderDataset("quicksort");
         syncThemeToggle();
       })();
     </script>
