@@ -952,6 +952,95 @@ theorem correctnessThm (a b : Nat) :
           </section>
 
           <section>
+            <h2>How We Built the Dataset</h2>
+            <p>
+              Building VeriBench required more than generating Lean files — it required a
+              disciplined pipeline to ensure that every task's theorems capture genuine
+              semantic properties rather than trivial restatements of the implementation.
+            </p>
+
+            <h3 style="margin-top:1.5rem;">Three-Stage Pipeline</h3>
+            <div class="pipeline-steps" style="display:flex;flex-direction:column;gap:1rem;margin:1rem 0 1.5rem;">
+              <div class="callout" style="border-left:4px solid var(--accent);padding:1rem 1.2rem;margin:0;">
+                <strong>Stage 1 — AI Draft (o3)</strong><br>
+                Given a Python source file, <code>o3</code> generates a first-draft Lean artifact following the 9-section schema:
+                functional implementation, unit tests, pre-condition, ≥ 3 semantically distinct property theorems,
+                post-condition, correctness theorem, imperative implementation, imperative tests, and an equivalence theorem.
+              </div>
+              <div class="callout" style="border-left:4px solid #f59e0b;padding:1rem 1.2rem;margin:0;">
+                <strong>Stage 2 — Human Curator Review</strong><br>
+                A second annotator (paper author or Lean/PL/formal-methods collaborator, working independently from the drafter)
+                reads the draft against a written rubric. The review checks:
+                <ul style="margin:0.5rem 0 0 1.2rem;">
+                  <li>Are theorems semantically distinct — not just the same predicate with different concrete inputs?</li>
+                  <li>Are any theorems vacuously true (hold even for a constant function)?</li>
+                  <li>Does the pre-condition rule out degenerate inputs?</li>
+                  <li>Do tests cover positive, negative, and edge cases?</li>
+                  <li>Is every proof body either closed or carrying an explicit <code>sorry</code>?</li>
+                </ul>
+                <strong>A human must sign off before any task enters the dataset.</strong>
+                AI automation can flag issues and propose fixes; the final inclusion decision is always human.
+              </div>
+              <div class="callout" style="border-left:4px solid #10b981;padding:1rem 1.2rem;margin:0;">
+                <strong>Stage 3 — Lean Kernel Verification</strong><br>
+                Every gold file must compile under <code>lake env lean</code> against the pinned toolchain
+                (Lean 4.22.0 + Mathlib v4.22.0). Remaining <code>sorry</code> placeholders are counted
+                transparently via the D₂ metric — they are never hidden or silently promoted to closed proofs.
+              </div>
+            </div>
+
+            <h3 style="margin-top:1.5rem;">Security Examples: From Lecture to Formal Proof</h3>
+            <p>
+              The 460-task security split is the largest in VeriBench, and its construction was
+              the most complex. The 227 paired safe/unsafe tasks in the <code>security_6858</code> subset
+              were generated from MIT 6.858 <em>Computer Systems Security</em> lecture content
+              spanning 20+ topics — buffer overflows, symbolic execution, web security, Spectre/Meltdown,
+              network security, and more.
+            </p>
+            <p>
+              For each lecture, the generation process: <strong>(1)</strong> identified 2–4 formalizable
+              security concepts, <strong>(2)</strong> generated a Python + C + Lean triple for both a
+              vulnerable function and a safe counterpart, <strong>(3)</strong> verified that both files model
+              the <em>same</em> underlying mechanism (not superficially related bugs), and
+              <strong>(4)</strong> applied security-specific theorem quality checks:
+            </p>
+            <ul style="margin:0.5rem 0 1rem 1.2rem;">
+              <li><strong>No reflexivity disguises:</strong> a theorem that reduces to <code>f x = f x</code>
+                is vacuously true for any function and does not capture a vulnerability.</li>
+              <li><strong>Multi-entity models required:</strong> if the vulnerability only manifests
+                across multiple accounts or sessions, the formal property must quantify over multiple
+                entities — not a single user.</li>
+              <li><strong>Structural proxies are acceptable:</strong> VeriBench proves structural safety
+                invariants (e.g., "bounds check returns <code>false</code> on overflow") rather than
+                full adversary-game security (Dolev-Yao models, IND-CPA reductions). The proxy must
+                capture the mechanism of the vulnerability, not just compile.</li>
+              <li><strong>Paired semantic consistency:</strong> the vulnerable file's theorems should
+                prove the flaw exists; the safe file's theorems should prove the fix works and is tight.</li>
+            </ul>
+            <p>
+              All security pairs were reviewed under the same human-sign-off requirement as the rest of
+              the dataset. Disagreements were resolved in the GitHub issue thread;
+              <strong>final merges to <code>main</code> were always performed by a human reviewer, never by an AI agent.</strong>
+            </p>
+
+            <h3 style="margin-top:1.5rem;">What Makes a Good Theorem</h3>
+            <p>
+              The most common generation failure — and the hardest to catch — is <strong>theorem duplication</strong>:
+              two properties with different names but word-for-word identical statements and proofs.
+              The second is just an alias of the first and adds no coverage.
+              The second-most-common failure is <strong>vacuity</strong>: a theorem that holds for any
+              implementation of the right type, not just the correct one.
+            </p>
+            <p>
+              VeriBench's curation rubric requires at least three semantically distinct property shapes
+              per task — for example, a universal (∀), an implication (→), and a biconditional (↔).
+              Concrete-input tests do not count toward this threshold.
+              This requirement is enforced at review time and is the single criterion that most often
+              sends a draft back for revision.
+            </p>
+          </section>
+
+          <section>
             <h2>Conclusion</h2>
             <p>
               VeriBench changes the target of code-verification evaluation. It
