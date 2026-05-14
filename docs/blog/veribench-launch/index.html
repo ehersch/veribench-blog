@@ -21,11 +21,20 @@
   <body>
     <header class="topbar">
       <div class="shell">
-        <a class="brand" href="">VeriBench</a>
+        <a class="brand" href="../../">VeriBench</a>
+        <div class="topbar-logos">
+          <a href="https://www.stanford.edu/" target="_blank" rel="noopener"><img class="block-s" src="../../figs/stanford.png" alt="Stanford Block S" /></a>
+          <a href="https://stairlab.stanford.edu/" target="_blank" rel="noopener"><img class="stair" src="../../figs/STAIR.jpeg" alt="Stanford Trustworthy AI Research logo" /></a>
+          <a href="https://ai.stanford.edu/" target="_blank" rel="noopener"><img class="sail" src="../../figs/sail_logo.jpg" alt="Stanford Artificial Intelligence Lab logo" /></a>
+        </div>
         <nav class="nav">
           <a href="https://github.com/brando90/veribench">GitHub</a>
-          <span>Link to preprint [TODO]</span>
-          <button class="theme-toggle" type="button" id="theme-toggle">Dark theme</button>
+          <span>Preprint</span>
+          <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Toggle dark mode">
+            <span class="theme-toggle-track">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+          </button>
         </nav>
       </div>
     </header>
@@ -39,10 +48,10 @@
           for AI Coding Agents
           </h1>
           <p class="lede">
-            VeriBench is an <em>end-to-end</em> benchmark for testing whether AI coding agents can do
+            VeriBench is an <em>end-to-end</em>benchmark for testing whether AI coding agents can do
             more than write code that looks right. The goal is to push toward
             agents that can produce code with real, checkable guarantees, and
-            ultimately make code generation more <strong>trustworthy</strong>. VeriBench leverages the Lean 4 kernel to check formal specifications and proofs associated with LLM-generated code.
+            ultimately make code generation more <strong>trustworthy</strong>.
           </p>
           <p class="post-meta">
             <span>May 8, 2026</span>
@@ -61,13 +70,6 @@
                 Rylan Schaeffer, Mo Tiwari, Donghyun Lee, Bo Han, Sanmi Koyejo
               </span>
             </p>
-            <figure class="post-affiliation-mark">
-              <div class="post-affiliation-logos">
-                <img class="stanford" src="../../figs/stanford_tree.avif" alt="Stanford University seal" />
-                <img class="stair" src="../../figs/STAIR.jpeg" alt="Stanford Trustworthy AI Research logo" />
-                <img class="sail" src="../../figs/sail_logo.jpg" alt="Stanford Artificial Intelligence Lab logo" />
-              </div>
-            </figure>
           </div>
           <!-- <figure class="post-header-figure">
             <img src="../../figs/veribench_graphic_2.png" alt="VeriBench overview graphic" />
@@ -210,7 +212,7 @@ theorem correctnessThm (a b : Nat) :
               and <a href="https://www.swebench.com/SWE-bench/">SWE-Bench</a>
               needed stronger follow-on variants like
               <a href="https://www.swebench.com/verified.html">SWE-Bench Verified</a>
-              and <a href="https://huggingface.co/datasets/ScaleAI/SWE-bench_Pro"> SWE-Bench Pro</a>, because
+              and SWE-Bench+, because
               finite test suites kept missing behaviorally important bugs. A
               model could pass the available tests and still be wrong in ways
               the benchmark did not observe.
@@ -329,29 +331,41 @@ theorem correctnessThm (a b : Nat) :
             </figure>
             <div class="dataset-hover" aria-labelledby="dataset-hover-title">
               <div class="dataset-hover-head">
-                <h3 id="dataset-hover-title">Hover Through The Dataset</h3>
+                <h3 id="dataset-hover-title">Explore The Dataset</h3>
                 <p>
-                  Move across the splits to see representative tasks, what kind of code they
-                  contain, and why that slice matters.
+                  Click a task to see real Python source, what makes its formal specification non-trivial,
+                  and why a shallow theorem would miss the point.
                 </p>
               </div>
               <div class="dataset-hover-layout">
                 <div class="dataset-hover-list" role="list" aria-label="Dataset splits">
-                  <button class="dataset-hover-item active" type="button" data-dataset-key="easy_set">
-                    <strong><code>easy_set</code></strong>
-                    <span>Small functions with explicit preconditions and direct correctness targets.</span>
+                  <button class="dataset-hover-item active" type="button" data-dataset-key="quicksort">
+                    <strong><code>Quicksort</code></strong>
+                    <span>Sortedness <em>and</em> permutation completeness — two independent proof obligations.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="humaneval_set">
-                    <strong><code>humaneval_set</code></strong>
-                    <span>Familiar coding-benchmark style tasks with more open-ended functional behavior.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="edit_distance">
+                    <strong><code>Edit Distance</code></strong>
+                    <span>DP recurrence with base cases, monotonicity, and optimality.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="real_code">
-                    <strong><code>real_code</code></strong>
-                    <span>Standard-library and practical code patterns rather than only classroom examples.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="shell_injection">
+                    <strong><code>Shell Injection</code></strong>
+                    <span>Safe vs. unsafe: the formal spec must distinguish them where tests cannot.</span>
                   </button>
-                  <button class="dataset-hover-item" type="button" data-dataset-key="security_sets">
-                    <strong><code>security_*</code></strong>
-                    <span>Safe/unsafe and security-oriented tasks where the specification really matters.</span>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="erc20">
+                    <strong><code>ERC-20 Allowance</code></strong>
+                    <span>Conservation law: infinite approval is stable; finite approval decreases.</span>
+                  </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="uri_pct">
+                    <strong><code>URI % Encoding</code></strong>
+                    <span>RFC 3986: three independent character-class conditions that must all hold.</span>
+                  </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="median_high">
+                    <strong><code>Median (high)</code></strong>
+                    <span>Piecewise mathematical definition: odd vs. even length, index correctness.</span>
+                  </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="dijkstra">
+                    <strong><code>Dijkstra</code></strong>
+                    <span>Min-distance invariant over a priority queue — requires inductive reasoning.</span>
                   </button>
                 </div>
                 <div class="dataset-hover-preview" aria-live="polite">
@@ -380,7 +394,7 @@ theorem correctnessThm (a b : Nat) :
             </div>
             <p>
               VeriBench is not a tiny toy set. The full release contains 884
-              tasks, with a 602-task canonical core that spans introductory
+              tasks. A five-split canonical core spans introductory
               programs, classical algorithms, HumanEval-style functions, Python
               standard-library code, and a large security-focused subset.
             </p>
@@ -487,6 +501,106 @@ theorem correctnessThm (a b : Nat) :
               cryptography invariants. The point is to test whether an agent can
               carry formal reasoning across all of those settings, not just one
               narrow style of task.
+            </p>
+          </section>
+
+          <section>
+            <h2>What a Gold Lean Artifact Looks Like</h2>
+            <p>
+              Every VeriBench task pairs a Python source file with a hand-curated
+              Lean 4 gold artifact that follows a fixed 9-part schema. Here is a
+              condensed view for the binary search task from the CS set.
+            </p>
+            <div class="code-block lean">
+              <pre><code><span class="comment">-- 1. Implementation (fuelled recursion for totality)</span>
+<span class="keyword">def</span> binarySearch (arr : List Nat) (target : Nat) : Option Nat := ...
+
+<span class="comment">-- 2. Unit tests (positive + negative + edge cases)</span>
+<span class="keyword">example</span> : binarySearch [1,2,3,4,5] 3 = some 2 := <span class="keyword">by</span> native_decide
+<span class="keyword">example</span> : binarySearch [1,2,3,4,5] 6 = none  := <span class="keyword">by</span> native_decide
+
+<span class="comment">-- 3. Pre-condition (non-trivial: sorted input required)</span>
+<span class="keyword">def</span> Pre (arr : List Nat) : Prop :=
+  ∀ i j xi xj, i ≤ j → arr[i]? = some xi → arr[j]? = some xj → xi ≤ xj
+
+<span class="comment">-- 4. Property theorems (soundness + completeness, proved)</span>
+<span class="keyword">theorem</span> soundness_thm (arr : List Nat) (target idx : Nat) :
+    binarySearch arr target = some idx → arr[idx]? = some target := ...
+
+<span class="keyword">theorem</span> completeness_thm (arr : List Nat) (target : Nat) :
+    Pre arr → (∃ i, arr[i]? = some target) →
+    ∃ idx, binarySearch arr target = some idx := ...
+
+<span class="comment">-- 5. Correctness theorem (Pre → Post, bundles all properties)</span>
+<span class="keyword">theorem</span> correctness_thm (arr : List Nat) (target : Nat) :
+    Pre arr → soundness_prop arr target ∧ completeness_prop arr target := ...
+
+<span class="comment">-- 6. Imperative implementation + equivalence theorem</span>
+<span class="keyword">def</span> binarySearchImp (arr : List Nat) (target : Nat) : Option Nat :=
+  Id.run <span class="keyword">do</span> ...
+
+<span class="keyword">theorem</span> equivalence_thm (arr : List Nat) (target : Nat) :
+    binarySearch arr target = binarySearchImp arr target := <span class="keyword">by</span> ...</code></pre>
+            </div>
+            <p>
+              The schema separates executable behavior (the implementation and
+              tests), admissible inputs (the Pre-condition), atomic proof
+              obligations (the property theorems), and bundled correctness claims.
+              This structure is what makes VeriBench's evaluation partial-credit:
+              even if an agent cannot prove everything, we can measure how much
+              of the schema it recovered.
+            </p>
+            <p class="callout">
+              Gold artifacts are not raw model output — every theorem is written
+              by a human curator and checked to close without <code>sorry</code>
+              in the benchmark's Lean 4.22.0 + Mathlib toolchain. The remaining
+              <code>sorry</code> rate across the gold set is tracked as
+              <strong>D₂ ≈ 0.57</strong> and reported alongside agent scores so
+              benchmark immaturity does not inflate agent-skill claims.
+            </p>
+          </section>
+
+          <section>
+            <h2>Paired Safe and Unsafe Security Tasks</h2>
+            <p>
+              The <code>security_6858</code> split contains 227 paired tasks,
+              each consisting of a <strong>vulnerable</strong> and a
+              <strong>safe</strong> Python function. The formal specification
+              must not just describe what the function does — it must capture
+              the safety condition that distinguishes the two versions.
+            </p>
+            <div class="code-block python">
+              <pre><code><span class="comment"># VULNERABLE — no bounds check (0_unsafeCopy.py)</span>
+<span class="keyword">def</span> unsafe_copy(dst: bytearray, src: bytearray) -&gt; None:
+    <span class="keyword">for</span> i, b <span class="keyword">in</span> enumerate(src):
+        dst[i] = b  <span class="comment"># raises IndexError if len(src) &gt; len(dst)</span>
+
+<span class="comment"># SAFE — guards against overflow (0_unsafeCopy_safe.py)</span>
+<span class="keyword">def</span> safe_copy(dst: bytearray, src: bytearray) -&gt; None:
+    <span class="keyword">if</span> len(src) &gt; len(dst):
+        <span class="keyword">raise</span> ValueError(<span class="string">"source longer than destination"</span>)
+    dst[:len(src)] = src</code></pre>
+            </div>
+            <p>
+              A shallow formalization of <code>safe_copy</code> that only restates
+              what the function returns will score the same as a formalization of
+              <code>unsafe_copy</code>. The theorem that actually discriminates is
+              the safety property:
+            </p>
+            <div class="code-block lean">
+              <pre><code><span class="comment">-- The safety theorem that distinguishes safe from unsafe:</span>
+<span class="keyword">theorem</span> no_overflow (dst src : List Nat) :
+    safeCopy dst src ≠ none → src.length ≤ dst.length := <span class="keyword">by</span> ...
+
+<span class="comment">-- Wrong implementations that pass all unit tests but fail this theorem:</span>
+<span class="comment">-- fun dst src => some src   (never raises, always "succeeds")</span>
+<span class="comment">-- fun dst src => if dst.isEmpty then none else some src</span></code></pre>
+            </div>
+            <p>
+              This is why VeriBench measures theorem coverage against a gold
+              reference: the gold file contains the safety property, and any
+              candidate that omits it scores lower, even if it compiles cleanly
+              and passes the unit tests.
             </p>
           </section>
 
@@ -747,6 +861,47 @@ theorem correctnessThm (a b : Nat) :
           </section>
 
           <section>
+            <h2>Three Ways to Fail (and How VeriBench Tells Them Apart)</h2>
+            <p>
+              All three failure modes below produce Lean files that look
+              plausible. VeriBench's conjunctive score penalizes each one
+              differently.
+            </p>
+            <div class="metric-flow">
+              <div class="metric-card">
+                <div class="metric-step">Failure A</div>
+                <h3>Compiles, but sorry everywhere</h3>
+                <pre><code>theorem correctnessThm (a b : Nat) :
+  f a b = a + b := by sorry</code></pre>
+                <p>IC1 = 1, IC2 ≈ 0, TC1 ≈ 0.1 → low S_skill</p>
+              </div>
+              <div class="metric-card">
+                <div class="metric-step">Failure B</div>
+                <h3>No sorry, but vacuous theorem</h3>
+                <pre><code>theorem correctnessThm (a b : Nat) :
+  f a b = f a b := by rfl
+-- Says nothing about behavior</code></pre>
+                <p>IC1 = 1, IC2 = 1, TC1 ≈ 0 → still low S_skill</p>
+              </div>
+              <div class="metric-card">
+                <div class="metric-step">Gold standard</div>
+                <h3>Meaningful theorem, proved</h3>
+                <pre><code>theorem correctnessThm (a b : Nat) :
+  Pre a b →
+  f a b = a + b ∧ f a b ≥ a := by
+  intro h; exact ⟨..., ...⟩</code></pre>
+                <p>IC1 = 1, IC2 = 1, TC1 → high S_skill</p>
+              </div>
+            </div>
+            <p>
+              The three-factor product in S_skill = (IC1 · IC2 · TC1)^(1/3)
+              ensures that a strong proof rate (IC2) cannot compensate for
+              vacuous theorems (TC1 ≈ 0), and theorem coverage cannot compensate
+              for a file that does not compile.
+            </p>
+          </section>
+
+          <section>
             <h2>Main Empirical Takeaway</h2>
             <p>
               This is the central result of VeriBench: we see a
@@ -793,6 +948,95 @@ theorem correctnessThm (a b : Nat) :
               In that sense, human-calibrated judging is one path toward
               scalable oversight <strong>without a gold reference for every new
               candidate artifact</strong>.
+            </p>
+          </section>
+
+          <section>
+            <h2>How We Built the Dataset</h2>
+            <p>
+              Building VeriBench required more than generating Lean files — it required a
+              disciplined pipeline to ensure that every task's theorems capture genuine
+              semantic properties rather than trivial restatements of the implementation.
+            </p>
+
+            <h3 style="margin-top:1.5rem;">Three-Stage Pipeline</h3>
+            <div class="pipeline-steps" style="display:flex;flex-direction:column;gap:1rem;margin:1rem 0 1.5rem;">
+              <div class="callout" style="border-left:4px solid var(--accent);padding:1rem 1.2rem;margin:0;">
+                <strong>Stage 1 — AI Draft (o3)</strong><br>
+                Given a Python source file, <code>o3</code> generates a first-draft Lean artifact following the 9-section schema:
+                functional implementation, unit tests, pre-condition, ≥ 3 semantically distinct property theorems,
+                post-condition, correctness theorem, imperative implementation, imperative tests, and an equivalence theorem.
+              </div>
+              <div class="callout" style="border-left:4px solid #f59e0b;padding:1rem 1.2rem;margin:0;">
+                <strong>Stage 2 — Human Curator Review</strong><br>
+                A second annotator (paper author or Lean/PL/formal-methods collaborator, working independently from the drafter)
+                reads the draft against a written rubric. The review checks:
+                <ul style="margin:0.5rem 0 0 1.2rem;">
+                  <li>Are theorems semantically distinct — not just the same predicate with different concrete inputs?</li>
+                  <li>Are any theorems vacuously true (hold even for a constant function)?</li>
+                  <li>Does the pre-condition rule out degenerate inputs?</li>
+                  <li>Do tests cover positive, negative, and edge cases?</li>
+                  <li>Is every proof body either closed or carrying an explicit <code>sorry</code>?</li>
+                </ul>
+                <strong>A human must sign off before any task enters the dataset.</strong>
+                AI automation can flag issues and propose fixes; the final inclusion decision is always human.
+              </div>
+              <div class="callout" style="border-left:4px solid #10b981;padding:1rem 1.2rem;margin:0;">
+                <strong>Stage 3 — Lean Kernel Verification</strong><br>
+                Every gold file must compile under <code>lake env lean</code> against the pinned toolchain
+                (Lean 4.22.0 + Mathlib v4.22.0). Remaining <code>sorry</code> placeholders are counted
+                transparently via the D₂ metric — they are never hidden or silently promoted to closed proofs.
+              </div>
+            </div>
+
+            <h3 style="margin-top:1.5rem;">Security Examples: From Lecture to Formal Proof</h3>
+            <p>
+              The 460-task security split is the largest in VeriBench, and its construction was
+              the most complex. The 227 paired safe/unsafe tasks in the <code>security_6858</code> subset
+              were generated from MIT 6.858 <em>Computer Systems Security</em> lecture content
+              spanning 20+ topics — buffer overflows, symbolic execution, web security, Spectre/Meltdown,
+              network security, and more.
+            </p>
+            <p>
+              For each lecture, the generation process: <strong>(1)</strong> identified 2–4 formalizable
+              security concepts, <strong>(2)</strong> generated a Python + C + Lean triple for both a
+              vulnerable function and a safe counterpart, <strong>(3)</strong> verified that both files model
+              the <em>same</em> underlying mechanism (not superficially related bugs), and
+              <strong>(4)</strong> applied security-specific theorem quality checks:
+            </p>
+            <ul style="margin:0.5rem 0 1rem 1.2rem;">
+              <li><strong>No reflexivity disguises:</strong> a theorem that reduces to <code>f x = f x</code>
+                is vacuously true for any function and does not capture a vulnerability.</li>
+              <li><strong>Multi-entity models required:</strong> if the vulnerability only manifests
+                across multiple accounts or sessions, the formal property must quantify over multiple
+                entities — not a single user.</li>
+              <li><strong>Structural proxies are acceptable:</strong> VeriBench proves structural safety
+                invariants (e.g., "bounds check returns <code>false</code> on overflow") rather than
+                full adversary-game security (Dolev-Yao models, IND-CPA reductions). The proxy must
+                capture the mechanism of the vulnerability, not just compile.</li>
+              <li><strong>Paired semantic consistency:</strong> the vulnerable file's theorems should
+                prove the flaw exists; the safe file's theorems should prove the fix works and is tight.</li>
+            </ul>
+            <p>
+              All security pairs were reviewed under the same human-sign-off requirement as the rest of
+              the dataset. Disagreements were resolved in the GitHub issue thread;
+              <strong>final merges to <code>main</code> were always performed by a human reviewer, never by an AI agent.</strong>
+            </p>
+
+            <h3 style="margin-top:1.5rem;">What Makes a Good Theorem</h3>
+            <p>
+              The most common generation failure — and the hardest to catch — is <strong>theorem duplication</strong>:
+              two properties with different names but word-for-word identical statements and proofs.
+              The second is just an alias of the first and adds no coverage.
+              The second-most-common failure is <strong>vacuity</strong>: a theorem that holds for any
+              implementation of the right type, not just the correct one.
+            </p>
+            <p>
+              VeriBench's curation rubric requires at least three semantically distinct property shapes
+              per task — for example, a universal (∀), an implication (→), and a biconditional (↔).
+              Concrete-input tests do not count toward this threshold.
+              This requirement is enforced at review time and is the single criterion that most often
+              sends a draft back for revision.
             </p>
           </section>
 
@@ -939,42 +1183,46 @@ theorem correctnessThm (a b : Int) :
               "This is a middle case: better than example-only output, but still not the complete theorem story you would want."
           },
           {
-            taskTitle: "Security-flavored / IsEven",
-            python: `def prog(n: int) -> bool:
-    return n % 2 == 0
+            taskTitle: "Security / BufferCopy",
+            python: `# VULNERABLE (no bounds check)
+def unsafe_copy(dst: bytearray, src: bytearray):
+    for i, b in enumerate(src):
+        dst[i] = b  # IndexError if len(src) > len(dst)
 
-assert prog(4) is True
-assert prog(5) is False`,
-            aTitle: "Wrong abstraction",
+# SAFE (with bounds guard)
+def safe_copy(dst: bytearray, src: bytearray):
+    if len(src) > len(dst):
+        raise ValueError("source longer than destination")
+    dst[:len(src)] = src`,
+            aTitle: "Theorem misses the safety property",
             aChoice: "Lower score",
             aChoiceClass: "other",
-            aCode: `def isEven (n : Nat) : Bool := true
+            aCode: `-- Unsafe version: spec says nothing about overflow
+def unsafeCopy (dst src : List Nat) : List Nat := src
 
-example : isEven 4 = true := by native_decide
-example : isEven 5 = false := by decide`,
-            aScore: "0.08",
-            bTitle: "Connects code to arithmetic meaning",
+theorem correctnessThm (dst src : List Nat) :
+  unsafeCopy dst src = src := by rfl`,
+            aScore: "0.12",
+            bTitle: "Captures the safety pre-condition",
             bChoice: "Preferred",
             bChoiceClass: "best",
-            bCode: `def isEven (n : Nat) : Bool := n % 2 == 0
+            bCode: `def safeCopy (dst src : List Nat) : Option (List Nat) :=
+  if src.length ≤ dst.length then some src else none
 
-def correctSpec (n : Nat) : Prop :=
-  isEven n = true ↔ ∃ k, n = 2 * k
-
-theorem correctnessThm (n : Nat) :
-  correctSpec n := by
-  sorry`,
-            bScore: "0.57",
+-- Key property: copy only succeeds when src fits
+theorem safety_prop (dst src : List Nat) :
+    safeCopy dst src = none ↔ src.length > dst.length := by
+  simp [safeCopy]; omega`,
+            bScore: "0.78",
             winner: "Candidate B",
-            pillText: "Right theorem direction, incomplete proof",
+            pillText: "Safety pre-condition captured",
             pillClass: "good",
-            summary:
-              "Candidate B is preferred even with an incomplete proof because it at least states the right arithmetic claim; candidate A does not model the function correctly.",
-            alignment: "Medium",
-            theorems: "Promising",
-            coverage: "Medium",
+            summary: "The unsafe version silently ignores the overflow condition. Candidate B states and proves the safety property — that a copy only succeeds when the source fits in the destination.",
+            alignment: "High",
+            theorems: "Strong",
+            coverage: "High",
             note:
-              "The benchmark can distinguish between bad code, good theorem statements, and fully checked end-to-end artifacts."
+              "Security tasks often hinge on what happens at the boundary — a theorem that ignores the overflow entirely misses the point of the formalization."
           }
         ];
 
@@ -1008,65 +1256,152 @@ theorem correctnessThm (n : Nat) :
         const datasetCode = document.getElementById("dataset-code");
         const datasetNote = document.getElementById("dataset-note");
         const datasetDemos = {
-          easy_set: {
-            badge: "Intro / explicit specs",
-            count: "Representative slice",
-            title: "<code>easy_set</code>: clean benchmark primitives",
+          quicksort: {
+            badge: "CS algorithms",
+            count: "cs_set — 13 classical algorithms",
+            title: "<code>cs_set / quick_sort</code>: sortedness + permutation",
             description:
-              "This split makes it easy to see whether a model can track a straightforward precondition, executable behavior, and a crisp theorem target all at once.",
-            code: `<span class="comment"># easy_set/1_MyAdd.py</span>
-<span class="keyword">def</span> pre(a: int, b: int) -&gt; bool:
-    <span class="keyword">return</span> a &gt;= 0 <span class="keyword">and</span> b &gt;= 0
+              "Quicksort is easy to implement but hard to verify. The formal spec needs two independent theorems: the output is sorted, AND it contains exactly the same elements as the input. A shallow theorem that only checks sortedness lets an implementation that returns an empty list pass.",
+            code: `<span class="comment"># cs_set/quick_sort.py</span>
+<span class="keyword">def</span> pre(arr: List[int]) -&gt; bool:
+    <span class="keyword">return</span> isinstance(arr, list) <span class="keyword">and</span> all(isinstance(x, int) <span class="keyword">for</span> x <span class="keyword">in</span> arr)
 
-<span class="keyword">def</span> prog(a: int, b: int) -&gt; int:
-    <span class="keyword">return</span> a + b`,
+<span class="keyword">def</span> quick_sort(arr: List[int]) -&gt; List[int]:
+    <span class="keyword">if</span> len(arr) &lt;= 1: <span class="keyword">return</span> arr.copy()
+    pivot = arr[-1]
+    left  = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr[:-1] <span class="keyword">if</span> x &lt;= pivot]
+    right = [x <span class="keyword">for</span> x <span class="keyword">in</span> arr[:-1] <span class="keyword">if</span> x &gt; pivot]
+    <span class="keyword">return</span> quick_sort(left) + [pivot] + quick_sort(right)
+
+<span class="comment"># Gold theorems needed:</span>
+<span class="comment">#   sorted_prop:      ∀ i, result[i] ≤ result[i+1]</span>
+<span class="comment">#   permutation_prop: result.toMultiset = input.toMultiset</span>`,
             note:
-              "Good for seeing if an autoformalizer can move from toy Python into simple but meaningful specifications."
+              "An agent that only proves sortedness scores partially. One that also proves the permutation property — no element lost or invented — scores fully. This split measures whether the agent understands what 'correct sort' actually means."
           },
-          humaneval_set: {
-            badge: "Benchmark transfer",
-            count: "HumanEval-style functions",
-            title: "<code>humaneval_set</code>: familiar coding tasks",
+          edit_distance: {
+            badge: "Dynamic programming",
+            count: "cs_set — Levenshtein distance",
+            title: "<code>cs_set / edit_distance</code>: DP recurrence",
             description:
-              "These are closer to mainstream coding-benchmark prompts, which makes them useful for checking whether benchmark skill transfers into formalization skill.",
-            code: `<span class="comment"># humaneval_set/max_pair.py</span>
-<span class="keyword">def</span> prog(a: int, b: int) -&gt; int:
-    <span class="keyword">return</span> a <span class="keyword">if</span> a &gt;= b <span class="keyword">else</span> b
+              "Edit distance requires specifying the full DP recurrence, not just the final answer. The gold theorems capture the base cases (empty string = pure insertions/deletions), the recurrence relation (match vs. substitute), and optimality (no sequence of fewer edits exists).",
+            code: `<span class="comment"># cs_set/edit_distance.py — Levenshtein distance</span>
+<span class="keyword">def</span> edit_distance(s1: str, s2: str) -&gt; int:
+    m, n = len(s1), len(s2)
+    dp = [[0]*(n+1) <span class="keyword">for</span> _ <span class="keyword">in</span> range(m+1)]
+    <span class="keyword">for</span> i <span class="keyword">in</span> range(m+1): dp[i][0] = i   <span class="comment"># i deletions</span>
+    <span class="keyword">for</span> j <span class="keyword">in</span> range(n+1): dp[0][j] = j   <span class="comment"># j insertions</span>
+    <span class="keyword">for</span> i <span class="keyword">in</span> range(1, m+1):
+        <span class="keyword">for</span> j <span class="keyword">in</span> range(1, n+1):
+            cost = 0 <span class="keyword">if</span> s1[i-1]==s2[j-1] <span class="keyword">else</span> 1
+            dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+    <span class="keyword">return</span> dp[m][n]
 
-<span class="keyword">assert</span> prog(5, 2) == 5
-<span class="keyword">assert</span> prog(1, 7) == 7`,
+<span class="comment"># assert edit_distance("kitten","sitting") == 3</span>`,
             note:
-              "Useful for testing whether a model can go beyond passing examples and state a general property over a familiar function."
+              "The theorem for edit distance cannot be stated as a single closed-form equation — it requires capturing the recurrence itself. This is one of the hardest formalization targets in the cs_set."
           },
-          real_code: {
-            badge: "Library behavior",
-            count: "Python standard-library flavored",
-            title: "<code>real_code</code>: practical code paths",
+          shell_injection: {
+            badge: "Security — safe/unsafe pair",
+            count: "security_python — 6 injection pairs",
+            title: "<code>security_python</code>: shell injection",
             description:
-              "This slice pushes past toy functions into code patterns that resemble what people actually read in a real repository.",
-            code: `<span class="comment"># real_code/rfc_guard.py</span>
-<span class="keyword">def</span> prog(label: str) -&gt; bool:
-    <span class="keyword">return</span> len(label) &lt;= 63 <span class="keyword">and</span> label.isascii()
+              "Both functions return the same output on benign input. The formal spec must distinguish them: the safe version's safety property holds for all inputs, including adversarial ones. Tests on benign input alone cannot separate them.",
+            code: `<span class="comment"># UNSAFE — shell=True, user input injected into command string</span>
+<span class="keyword">def</span> list_files(path: str) -&gt; str:
+    cmd = f<span class="string">"ls {path}"</span>                    <span class="comment"># "; rm -rf /" works here</span>
+    <span class="keyword">return</span> subprocess.run(cmd, shell=<span class="keyword">True</span>, ...).stdout
 
-<span class="keyword">assert</span> prog("stanford") <span class="keyword">is</span> True
-<span class="keyword">assert</span> prog("x" * 64) <span class="keyword">is</span> False`,
+<span class="comment"># SAFE — shell=False, argv list, no shell metachar parsing</span>
+<span class="keyword">def</span> list_files_safe(path: str) -&gt; str:
+    cmd = [<span class="string">"ls"</span>, <span class="string">"--"</span>, path]               <span class="comment"># path is never parsed</span>
+    <span class="keyword">return</span> subprocess.run(cmd, shell=<span class="keyword">False</span>, ...).stdout
+
+<span class="comment"># Gold theorem: ∀ path, no_shell_metachar_execution(list_files_safe(path))</span>`,
             note:
-              "These tasks matter because the intended behavior is tied to external conventions, not just informal intuition."
+              "Unit tests on 'safeToken' and 'DROP TABLE' pass for both versions. Only a formal safety property — one that quantifies over ALL inputs including adversarial ones — tells them apart."
           },
-          security_sets: {
-            badge: "High-stakes semantics",
-            count: "Safe/unsafe security tasks",
-            title: "<code>security_*</code>: when the spec really matters",
+          erc20: {
+            badge: "Crypto / DeFi",
+            count: "crypto_set_real — ERC-20 invariants",
+            title: "<code>crypto_set_real</code>: ERC-20 infinite allowance",
             description:
-              "This part of the dataset includes security-sensitive code where shallow tests can miss exactly the sort of bug a benchmark should care about.",
-            code: `<span class="comment"># security_python/is_sanitized.py</span>
-<span class="keyword">def</span> prog(token: str) -&gt; bool:
-    <span class="keyword">return</span> token.isalnum() <span class="keyword">and</span> len(token) &lt; 17
+              "ERC-20 tokens use a sentinel value (MAX_UINT) to represent infinite approval. Spending against an infinite allowance must not decrease it. The formal spec requires a case split that breaks ordinary subtraction semantics.",
+            code: `<span class="comment"># crypto_set_real/my_erc20_infinite_allowance_after.py</span>
+MAX_UINT = 1000  <span class="comment"># sentinel for "infinite" approval</span>
 
-<span class="keyword">assert</span> prog("safeToken7") <span class="keyword">is</span> True
-<span class="keyword">assert</span> prog("DROP_TABLE!") <span class="keyword">is</span> False`,
+<span class="keyword">def</span> my_erc20_infinite_allowance_after(allowance: int, spend: int) -&gt; int:
+    <span class="keyword">assert</span> 0 &lt;= allowance &lt;= MAX_UINT <span class="keyword">and</span> 0 &lt;= spend &lt;= MAX_UINT
+    <span class="keyword">if</span> allowance == MAX_UINT:   <span class="keyword">return</span> MAX_UINT  <span class="comment"># stable</span>
+    <span class="keyword">if</span> spend &lt;= allowance:      <span class="keyword">return</span> allowance - spend
+    <span class="keyword">return</span> allowance            <span class="comment"># underflow protection</span>
+
+<span class="comment"># Gold theorems:</span>
+<span class="comment">#   infinite_stable: allowance=MAX_UINT → result=MAX_UINT</span>
+<span class="comment">#   no_underflow:    result ≤ allowance  (always)</span>`,
             note:
-              "This is where formal statements can be much more valuable than a thin example suite."
+              "An agent that formalizes only the normal subtraction path will miss both the infinite-sentinel invariant and the underflow guard — two safety properties that matter in production DeFi code."
+          },
+          uri_pct: {
+            badge: "RFC / Protocol",
+            count: "rfc_set_real — 15 RFC kernels",
+            title: "<code>rfc_set_real</code>: URI percent-encoding (RFC 3986)",
+            description:
+              "Validating a percent-encoded triplet requires three independent conditions: the '%' byte, a valid hex digit in the high nibble, and a valid hex digit in the low nibble. Any theorem that omits one condition accepts invalid encodings.",
+            code: `<span class="comment"># rfc_set_real/my_uri_pct_triplet_valid.py — RFC 3986 §2.1</span>
+<span class="keyword">def</span> my_uri_pct_triplet_valid(pct: int, hi: int, lo: int) -&gt; bool:
+    <span class="keyword">assert</span> 0 &lt;= pct &lt;= 127 <span class="keyword">and</span> 0 &lt;= hi &lt;= 127 <span class="keyword">and</span> 0 &lt;= lo &lt;= 127
+    <span class="keyword">return</span> (
+        pct == 37   <span class="comment"># '%' must be ASCII 37</span>
+        <span class="keyword">and</span> ((48&lt;=hi&lt;=57) <span class="keyword">or</span> (65&lt;=hi&lt;=70) <span class="keyword">or</span> (97&lt;=hi&lt;=102))
+        <span class="keyword">and</span> ((48&lt;=lo&lt;=57) <span class="keyword">or</span> (65&lt;=lo&lt;=70) <span class="keyword">or</span> (97&lt;=lo&lt;=102))
+    )
+<span class="comment"># valid: (37,65,48)='%A0'  invalid: (37,71,48)='%G0' (G not hex)</span>`,
+            note:
+              "RFC tasks are small but specification-rich. Three disjunctive ranges per nibble, all conjoined, means at least six independent conditions in the gold theorem. An agent that states only the pct==37 check scores at most 33%."
+          },
+          median_high: {
+            badge: "Standard library",
+            count: "realcode_set — Python statistics module",
+            title: "<code>realcode_set</code>: statistics.median_high",
+            description:
+              "The high median is the upper of the two middle elements for even-length lists. Formalizing it correctly requires a piecewise definition, an index proof, and showing the result is an element of the input — not a computed average.",
+            code: `<span class="comment"># realcode_set/29_statistics_median_high.py</span>
+<span class="keyword">def</span> pre(data) -&gt; bool:
+    <span class="keyword">return</span> len(data) &gt; 0 <span class="keyword">and</span> all(isinstance(x, numbers.Number) <span class="keyword">for</span> x <span class="keyword">in</span> data)
+
+<span class="keyword">def</span> median_high(data: List) -&gt; numbers.Number:
+    data = sorted(data)
+    <span class="keyword">return</span> data[len(data) // 2]  <span class="comment"># always the upper-middle</span>
+
+<span class="comment"># [1,3,5]   → data[1] = 3  (odd: centre)</span>
+<span class="comment"># [1,3,5,7] → data[2] = 5  (even: upper of {3,5})</span>
+<span class="comment"># Gold: result ∈ input  ∧  ∀ x ∈ input, x &gt; result → count(input,x) &lt; count(input, ≤result)</span>`,
+            note:
+              "Unlike mean or variance, median_high returns an actual element of the input. The gold spec must state both the index formula and the membership guarantee — an agent that only proves the index formula misses the structural constraint."
+          },
+          dijkstra: {
+            badge: "Graph algorithms",
+            count: "cs_set — Dijkstra shortest path",
+            title: "<code>cs_set / dijkstra</code>: min-distance invariant",
+            description:
+              "Dijkstra correctness requires an inductive invariant over the priority queue: every node popped has the optimal distance, and no future relaxation can improve it. Proving this in Lean requires reasoning about the heap structure and distance bounds simultaneously.",
+            code: `<span class="comment"># cs_set/dijkstra.py — Dijkstra with non-negative weights</span>
+<span class="keyword">def</span> pre(graph, start, target) -&gt; bool:
+    <span class="keyword">return</span> all(w &gt;= 0 <span class="keyword">for</span> edges <span class="keyword">in</span> graph <span class="keyword">for</span> _,w <span class="keyword">in</span> edges)
+
+<span class="keyword">def</span> dijkstra(graph, start: int, target: int) -&gt; Optional[int]:
+    pq, dists = [(0, start)], {start: 0}
+    <span class="keyword">while</span> pq:
+        d, u = heapq.heappop(pq)
+        <span class="keyword">if</span> u == target: <span class="keyword">return</span> d
+        <span class="keyword">if</span> d &gt; dists.get(u, inf): <span class="keyword">continue</span>  <span class="comment"># stale entry</span>
+        <span class="keyword">for</span> v, w <span class="keyword">in</span> graph[u]:
+            <span class="keyword">if</span> (nd := d+w) &lt; dists.get(v, inf):
+                dists[v]=nd; heapq.heappush(pq,(nd,v))
+    <span class="keyword">return</span> None`,
+            note:
+              "The key Lean theorem is: if Dijkstra returns d for target, then no path from start to target has weight less than d. This requires the non-negative weight Pre — the theorem is false without it."
           }
         };
 
@@ -1138,7 +1473,6 @@ theorem correctnessThm (n : Nat) :
 
         function syncThemeToggle() {
           const isDark = document.documentElement.dataset.theme === "dark";
-          themeToggle.textContent = isDark ? "Light theme" : "Dark theme";
           themeToggle.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
         }
 
@@ -1150,7 +1484,7 @@ theorem correctnessThm (n : Nat) :
         });
 
         renderDemo(0);
-        renderDataset("easy_set");
+        renderDataset("quicksort");
         syncThemeToggle();
       })();
     </script>
