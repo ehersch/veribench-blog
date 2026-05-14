@@ -4,8 +4,10 @@
   --surface-strong: #fffdf8;
   --text: #1f1f1b;
   --muted: #5f6058;
-  --accent: #0f766e;
-  --accent-strong: #134e4a;
+  --accent: #8c1515;
+  --accent-strong: #6d1111;
+  --heading: #8c1515;
+  --link: #8c1515;
   --line: rgba(31, 31, 27, 0.12);
   --shadow: 0 24px 70px rgba(31, 31, 27, 0.08);
   --bg-radial-1: rgba(15, 118, 110, 0.16);
@@ -22,8 +24,10 @@ html[data-theme="dark"] {
   --surface-strong: #171d1b;
   --text: #f0ebe2;
   --muted: #b9b4aa;
-  --accent: #6ad0c3;
-  --accent-strong: #a3ece3;
+  --accent: #c76666;
+  --accent-strong: #f0b6b6;
+  --heading: #f0b6b6;
+  --link: #f0b6b6;
   --line: rgba(240, 235, 226, 0.12);
   --shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
   --bg-radial-1: rgba(22, 120, 108, 0.2);
@@ -63,7 +67,7 @@ body {
 }
 
 a {
-  color: var(--accent-strong);
+  color: var(--link);
 }
 
 .shell {
@@ -148,6 +152,7 @@ h3 {
   line-height: 1.1;
   margin: 0 0 1rem;
   font-weight: 600;
+  color: var(--heading);
 }
 
 h1 {
