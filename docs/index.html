@@ -22,10 +22,19 @@
     <header class="topbar">
       <div class="shell">
         <a class="brand" href="./">VeriBench</a>
+        <div class="topbar-logos">
+          <a href="https://www.stanford.edu/" target="_blank" rel="noopener"><img class="block-s" src="./figs/stanford.png" alt="Stanford Block S" /></a>
+          <a href="https://stairlab.stanford.edu/" target="_blank" rel="noopener"><img class="stair" src="./figs/STAIR.jpeg" alt="Stanford Trustworthy AI Research logo" /></a>
+          <a href="https://ai.stanford.edu/" target="_blank" rel="noopener"><img class="sail" src="./figs/sail_logo.jpg" alt="Stanford Artificial Intelligence Lab logo" /></a>
+        </div>
         <nav class="nav">
           <a href="https://github.com/brando90/veribench">GitHub</a>
-          <span>Link to preprint [TODO]</span>
-          <button class="theme-toggle" type="button" id="theme-toggle">Dark theme</button>
+          <span>Preprint</span>
+          <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Toggle dark mode">
+            <span class="theme-toggle-track">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+          </button>
         </nav>
       </div>
     </header>
@@ -61,13 +70,6 @@
                 Rylan Schaeffer, Mo Tiwari, Donghyun Lee, Bo Han, Sanmi Koyejo
               </span>
             </p>
-            <figure class="post-affiliation-mark">
-              <div class="post-affiliation-logos">
-                <img class="stanford" src="./figs/stanford-university-seal-seeklogo.png" alt="Stanford University seal" />
-                <img class="stair" src="./figs/STAIR.jpeg" alt="Stanford Trustworthy AI Research logo" />
-                <img class="sail" src="./figs/sail_logo.jpg" alt="Stanford Artificial Intelligence Lab logo" />
-              </div>
-            </figure>
           </div>
           <!-- <figure class="post-header-figure">
             <img src="./figs/veribench_graphic_2.png" alt="VeriBench overview graphic" />
@@ -353,6 +355,18 @@ theorem correctnessThm (a b : Nat) :
                     <strong><code>security_*</code></strong>
                     <span>Safe/unsafe and security-oriented tasks where the specification really matters.</span>
                   </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="gov_cert">
+                    <strong><code>gov_cert</code></strong>
+                    <span>Supply-chain attestation and high-assurance multi-field predicates.</span>
+                  </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="critical_infra">
+                    <strong><code>critical_infra</code></strong>
+                    <span>Distributed systems predicates: circuit breakers, quorum, rate gates.</span>
+                  </button>
+                  <button class="dataset-hover-item" type="button" data-dataset-key="aerospace">
+                    <strong><code>aerospace</code></strong>
+                    <span>Flight-control and safety-critical predicates with non-trivial rate bounds.</span>
+                  </button>
                 </div>
                 <div class="dataset-hover-preview" aria-live="polite">
                   <div class="dataset-hover-meta">
@@ -380,7 +394,7 @@ theorem correctnessThm (a b : Nat) :
             </div>
             <p>
               VeriBench is not a tiny toy set. The full release contains 884
-              tasks, with a 602-task canonical core that spans introductory
+              tasks. A five-split canonical core spans introductory
               programs, classical algorithms, HumanEval-style functions, Python
               standard-library code, and a large security-focused subset.
             </p>
@@ -487,6 +501,106 @@ theorem correctnessThm (a b : Nat) :
               cryptography invariants. The point is to test whether an agent can
               carry formal reasoning across all of those settings, not just one
               narrow style of task.
+            </p>
+          </section>
+
+          <section>
+            <h2>What a Gold Lean Artifact Looks Like</h2>
+            <p>
+              Every VeriBench task pairs a Python source file with a hand-curated
+              Lean 4 gold artifact that follows a fixed 9-part schema. Here is a
+              condensed view for the binary search task from the CS set.
+            </p>
+            <div class="code-block lean">
+              <pre><code><span class="comment">-- 1. Implementation (fuelled recursion for totality)</span>
+<span class="keyword">def</span> binarySearch (arr : List Nat) (target : Nat) : Option Nat := ...
+
+<span class="comment">-- 2. Unit tests (positive + negative + edge cases)</span>
+<span class="keyword">example</span> : binarySearch [1,2,3,4,5] 3 = some 2 := <span class="keyword">by</span> native_decide
+<span class="keyword">example</span> : binarySearch [1,2,3,4,5] 6 = none  := <span class="keyword">by</span> native_decide
+
+<span class="comment">-- 3. Pre-condition (non-trivial: sorted input required)</span>
+<span class="keyword">def</span> Pre (arr : List Nat) : Prop :=
+  ∀ i j xi xj, i ≤ j → arr[i]? = some xi → arr[j]? = some xj → xi ≤ xj
+
+<span class="comment">-- 4. Property theorems (soundness + completeness, proved)</span>
+<span class="keyword">theorem</span> soundness_thm (arr : List Nat) (target idx : Nat) :
+    binarySearch arr target = some idx → arr[idx]? = some target := ...
+
+<span class="keyword">theorem</span> completeness_thm (arr : List Nat) (target : Nat) :
+    Pre arr → (∃ i, arr[i]? = some target) →
+    ∃ idx, binarySearch arr target = some idx := ...
+
+<span class="comment">-- 5. Correctness theorem (Pre → Post, bundles all properties)</span>
+<span class="keyword">theorem</span> correctness_thm (arr : List Nat) (target : Nat) :
+    Pre arr → soundness_prop arr target ∧ completeness_prop arr target := ...
+
+<span class="comment">-- 6. Imperative implementation + equivalence theorem</span>
+<span class="keyword">def</span> binarySearchImp (arr : List Nat) (target : Nat) : Option Nat :=
+  Id.run <span class="keyword">do</span> ...
+
+<span class="keyword">theorem</span> equivalence_thm (arr : List Nat) (target : Nat) :
+    binarySearch arr target = binarySearchImp arr target := <span class="keyword">by</span> ...</code></pre>
+            </div>
+            <p>
+              The schema separates executable behavior (the implementation and
+              tests), admissible inputs (the Pre-condition), atomic proof
+              obligations (the property theorems), and bundled correctness claims.
+              This structure is what makes VeriBench's evaluation partial-credit:
+              even if an agent cannot prove everything, we can measure how much
+              of the schema it recovered.
+            </p>
+            <p class="callout">
+              Gold artifacts are not raw model output — every theorem is written
+              by a human curator and checked to close without <code>sorry</code>
+              in the benchmark's Lean 4.22.0 + Mathlib toolchain. The remaining
+              <code>sorry</code> rate across the gold set is tracked as
+              <strong>D₂ ≈ 0.57</strong> and reported alongside agent scores so
+              benchmark immaturity does not inflate agent-skill claims.
+            </p>
+          </section>
+
+          <section>
+            <h2>Paired Safe and Unsafe Security Tasks</h2>
+            <p>
+              The <code>security_6858</code> split contains 227 paired tasks,
+              each consisting of a <strong>vulnerable</strong> and a
+              <strong>safe</strong> Python function. The formal specification
+              must not just describe what the function does — it must capture
+              the safety condition that distinguishes the two versions.
+            </p>
+            <div class="code-block python">
+              <pre><code><span class="comment"># VULNERABLE — no bounds check (0_unsafeCopy.py)</span>
+<span class="keyword">def</span> unsafe_copy(dst: bytearray, src: bytearray) -&gt; None:
+    <span class="keyword">for</span> i, b <span class="keyword">in</span> enumerate(src):
+        dst[i] = b  <span class="comment"># raises IndexError if len(src) &gt; len(dst)</span>
+
+<span class="comment"># SAFE — guards against overflow (0_unsafeCopy_safe.py)</span>
+<span class="keyword">def</span> safe_copy(dst: bytearray, src: bytearray) -&gt; None:
+    <span class="keyword">if</span> len(src) &gt; len(dst):
+        <span class="keyword">raise</span> ValueError(<span class="string">"source longer than destination"</span>)
+    dst[:len(src)] = src</code></pre>
+            </div>
+            <p>
+              A shallow formalization of <code>safe_copy</code> that only restates
+              what the function returns will score the same as a formalization of
+              <code>unsafe_copy</code>. The theorem that actually discriminates is
+              the safety property:
+            </p>
+            <div class="code-block lean">
+              <pre><code><span class="comment">-- The safety theorem that distinguishes safe from unsafe:</span>
+<span class="keyword">theorem</span> no_overflow (dst src : List Nat) :
+    safeCopy dst src ≠ none → src.length ≤ dst.length := <span class="keyword">by</span> ...
+
+<span class="comment">-- Wrong implementations that pass all unit tests but fail this theorem:</span>
+<span class="comment">-- fun dst src => some src   (never raises, always "succeeds")</span>
+<span class="comment">-- fun dst src => if dst.isEmpty then none else some src</span></code></pre>
+            </div>
+            <p>
+              This is why VeriBench measures theorem coverage against a gold
+              reference: the gold file contains the safety property, and any
+              candidate that omits it scores lower, even if it compiles cleanly
+              and passes the unit tests.
             </p>
           </section>
 
@@ -747,6 +861,47 @@ theorem correctnessThm (a b : Nat) :
           </section>
 
           <section>
+            <h2>Three Ways to Fail (and How VeriBench Tells Them Apart)</h2>
+            <p>
+              All three failure modes below produce Lean files that look
+              plausible. VeriBench's conjunctive score penalizes each one
+              differently.
+            </p>
+            <div class="metric-flow">
+              <div class="metric-card">
+                <div class="metric-step">Failure A</div>
+                <h3>Compiles, but sorry everywhere</h3>
+                <pre><code>theorem correctnessThm (a b : Nat) :
+  f a b = a + b := by sorry</code></pre>
+                <p>IC1 = 1, IC2 ≈ 0, TC1 ≈ 0.1 → low S_skill</p>
+              </div>
+              <div class="metric-card">
+                <div class="metric-step">Failure B</div>
+                <h3>No sorry, but vacuous theorem</h3>
+                <pre><code>theorem correctnessThm (a b : Nat) :
+  f a b = f a b := by rfl
+-- Says nothing about behavior</code></pre>
+                <p>IC1 = 1, IC2 = 1, TC1 ≈ 0 → still low S_skill</p>
+              </div>
+              <div class="metric-card">
+                <div class="metric-step">Gold standard</div>
+                <h3>Meaningful theorem, proved</h3>
+                <pre><code>theorem correctnessThm (a b : Nat) :
+  Pre a b →
+  f a b = a + b ∧ f a b ≥ a := by
+  intro h; exact ⟨..., ...⟩</code></pre>
+                <p>IC1 = 1, IC2 = 1, TC1 → high S_skill</p>
+              </div>
+            </div>
+            <p>
+              The three-factor product in S_skill = (IC1 · IC2 · TC1)^(1/3)
+              ensures that a strong proof rate (IC2) cannot compensate for
+              vacuous theorems (TC1 ≈ 0), and theorem coverage cannot compensate
+              for a file that does not compile.
+            </p>
+          </section>
+
+          <section>
             <h2>Main Empirical Takeaway</h2>
             <p>
               This is the central result of VeriBench: we see a
@@ -939,42 +1094,46 @@ theorem correctnessThm (a b : Int) :
               "This is a middle case: better than example-only output, but still not the complete theorem story you would want."
           },
           {
-            taskTitle: "Security-flavored / IsEven",
-            python: `def prog(n: int) -> bool:
-    return n % 2 == 0
+            taskTitle: "Security / BufferCopy",
+            python: `# VULNERABLE (no bounds check)
+def unsafe_copy(dst: bytearray, src: bytearray):
+    for i, b in enumerate(src):
+        dst[i] = b  # IndexError if len(src) > len(dst)
 
-assert prog(4) is True
-assert prog(5) is False`,
-            aTitle: "Wrong abstraction",
+# SAFE (with bounds guard)
+def safe_copy(dst: bytearray, src: bytearray):
+    if len(src) > len(dst):
+        raise ValueError("source longer than destination")
+    dst[:len(src)] = src`,
+            aTitle: "Theorem misses the safety property",
             aChoice: "Lower score",
             aChoiceClass: "other",
-            aCode: `def isEven (n : Nat) : Bool := true
+            aCode: `-- Unsafe version: spec says nothing about overflow
+def unsafeCopy (dst src : List Nat) : List Nat := src
 
-example : isEven 4 = true := by native_decide
-example : isEven 5 = false := by decide`,
-            aScore: "0.08",
-            bTitle: "Connects code to arithmetic meaning",
+theorem correctnessThm (dst src : List Nat) :
+  unsafeCopy dst src = src := by rfl`,
+            aScore: "0.12",
+            bTitle: "Captures the safety pre-condition",
             bChoice: "Preferred",
             bChoiceClass: "best",
-            bCode: `def isEven (n : Nat) : Bool := n % 2 == 0
+            bCode: `def safeCopy (dst src : List Nat) : Option (List Nat) :=
+  if src.length ≤ dst.length then some src else none
 
-def correctSpec (n : Nat) : Prop :=
-  isEven n = true ↔ ∃ k, n = 2 * k
-
-theorem correctnessThm (n : Nat) :
-  correctSpec n := by
-  sorry`,
-            bScore: "0.57",
+-- Key property: copy only succeeds when src fits
+theorem safety_prop (dst src : List Nat) :
+    safeCopy dst src = none ↔ src.length > dst.length := by
+  simp [safeCopy]; omega`,
+            bScore: "0.78",
             winner: "Candidate B",
-            pillText: "Right theorem direction, incomplete proof",
+            pillText: "Safety pre-condition captured",
             pillClass: "good",
-            summary:
-              "Candidate B is preferred even with an incomplete proof because it at least states the right arithmetic claim; candidate A does not model the function correctly.",
-            alignment: "Medium",
-            theorems: "Promising",
-            coverage: "Medium",
+            summary: "The unsafe version silently ignores the overflow condition. Candidate B states and proves the safety property — that a copy only succeeds when the source fits in the destination.",
+            alignment: "High",
+            theorems: "Strong",
+            coverage: "High",
             note:
-              "The benchmark can distinguish between bad code, good theorem statements, and fully checked end-to-end artifacts."
+              "Security tasks often hinge on what happens at the boundary — a theorem that ignores the overflow entirely misses the point of the formalization."
           }
         ];
 
@@ -1067,6 +1226,56 @@ theorem correctnessThm (n : Nat) :
 <span class="keyword">assert</span> prog("DROP_TABLE!") <span class="keyword">is</span> False`,
             note:
               "This is where formal statements can be much more valuable than a thin example suite."
+          },
+          gov_cert: {
+            badge: "Gov / Supply-chain",
+            count: "14 high-assurance domains",
+            title: "<code>gov_cert</code>: supply-chain attestation",
+            description:
+              "SLSA-inspired tasks where the specification must capture multi-field acceptance criteria: file existence, digest matching, and size bounds all at once.",
+            code: `<span class="comment"># gov_cert / my_slsa_multi_field_check.py</span>
+<span class="keyword">def</span> my_slsa_multi_field_check(
+    file_exists: bool, computed_digest: int,
+    expected_digest: int, file_size: int, max_size: int
+) -&gt; bool:
+    <span class="keyword">assert</span> max_size &gt; 0
+    <span class="keyword">return</span> (file_exists <span class="keyword">and</span>
+            computed_digest == expected_digest <span class="keyword">and</span>
+            file_size &lt;= max_size)`,
+            note:
+              "These tasks require three independent formal conditions to hold simultaneously — any shallow theorem that omits one condition lets wrong implementations through."
+          },
+          critical_infra: {
+            badge: "Critical Infra",
+            count: "Distributed systems invariants",
+            title: "<code>critical_infra</code>: circuit breaker semantics",
+            description:
+              "Predicates from load balancers, message queues, and service meshes. The circuit breaker example combines a Bool arming flag with a cross-multiplied percentage threshold — two genuinely independent proof obligations.",
+            code: `<span class="comment"># critical_infra / my_circuit_breaker_rate.py</span>
+<span class="keyword">def</span> my_circuit_breaker_rate(
+    enabled: bool, failures: int,
+    total: int, error_rate_pct: int
+) -&gt; bool:
+    <span class="keyword">assert</span> total &gt; 0 <span class="keyword">and</span> 0 &lt;= error_rate_pct &lt;= 100
+    <span class="keyword">return</span> enabled <span class="keyword">and</span> (failures * 100 &gt;= total * error_rate_pct)`,
+            note:
+              "A theorem that only captures the Bool flag misses the percentage arithmetic; one that only captures the arithmetic misses the arming condition. Both must be in the spec."
+          },
+          aerospace: {
+            badge: "Aerospace / Safety",
+            count: "NASA F Prime–inspired tasks",
+            title: "<code>aerospace</code>: attitude rate limiting",
+            description:
+              "Flight control predicates where a rate-limiter must accept only attitude changes within a certified bound. The formal specification must state the absolute-difference condition, not just the nominal path.",
+            code: `<span class="comment"># aerospace / my_attitude_rate_limit.py</span>
+<span class="keyword">def</span> my_attitude_rate_limit(
+    curr_deg: int, new_deg: int, max_rate: int
+) -&gt; bool:
+    <span class="keyword">assert</span> 0 &lt; max_rate
+    delta = abs(new_deg - curr_deg)
+    <span class="keyword">return</span> delta &lt;= max_rate`,
+            note:
+              "The absolute-difference condition requires a piecewise proof — you cannot close it with a single omega call. Tasks like this test whether the agent understands case analysis."
           }
         };
 
@@ -1138,7 +1347,6 @@ theorem correctnessThm (n : Nat) :
 
         function syncThemeToggle() {
           const isDark = document.documentElement.dataset.theme === "dark";
-          themeToggle.textContent = isDark ? "Light theme" : "Dark theme";
           themeToggle.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
         }
 
