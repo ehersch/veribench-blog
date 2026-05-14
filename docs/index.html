@@ -22,10 +22,19 @@
     <header class="topbar">
       <div class="shell">
         <a class="brand" href="./">VeriBench</a>
+        <div class="topbar-logos">
+          <a href="https://www.stanford.edu/" target="_blank" rel="noopener"><img class="block-s" src="./figs/stanford.png" alt="Stanford Block S" /></a>
+          <a href="https://stairlab.stanford.edu/" target="_blank" rel="noopener"><img class="stair" src="./figs/STAIR.jpeg" alt="Stanford Trustworthy AI Research logo" /></a>
+          <a href="https://ai.stanford.edu/" target="_blank" rel="noopener"><img class="sail" src="./figs/sail_logo.jpg" alt="Stanford Artificial Intelligence Lab logo" /></a>
+        </div>
         <nav class="nav">
           <a href="https://github.com/brando90/veribench">GitHub</a>
-          <span>Preprint coming soon</span>
-          <button class="theme-toggle" type="button" id="theme-toggle">Dark theme</button>
+          <span>Preprint</span>
+          <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Toggle dark mode">
+            <span class="theme-toggle-track">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+          </button>
         </nav>
       </div>
     </header>
@@ -61,13 +70,6 @@
                 Rylan Schaeffer, Mo Tiwari, Donghyun Lee, Bo Han, Sanmi Koyejo
               </span>
             </p>
-            <figure class="post-affiliation-mark">
-              <div class="post-affiliation-logos">
-                <img class="stanford" src="./figs/stanford-university-seal-seeklogo.png" alt="Stanford University seal" />
-                <img class="stair" src="./figs/STAIR.jpeg" alt="Stanford Trustworthy AI Research logo" />
-                <img class="sail" src="./figs/sail_logo.jpg" alt="Stanford Artificial Intelligence Lab logo" />
-              </div>
-            </figure>
           </div>
           <!-- <figure class="post-header-figure">
             <img src="./figs/veribench_graphic_2.png" alt="VeriBench overview graphic" />
@@ -1345,7 +1347,6 @@ theorem safety_prop (dst src : List Nat) :
 
         function syncThemeToggle() {
           const isDark = document.documentElement.dataset.theme === "dark";
-          themeToggle.textContent = isDark ? "Light theme" : "Dark theme";
           themeToggle.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
         }
 
