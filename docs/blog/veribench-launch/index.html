@@ -461,6 +461,31 @@ theorem correctnessThm (a b : Nat) :
           </section>
 
           <section>
+            <h2>How We Built the Dataset</h2>
+            <p>
+              Every task went through a three-stage pipeline: an AI first draft (o3 generates
+              the Lean artifact following the 9-section schema), a human curator review against a
+              written rubric, and Lean kernel compilation. A human must sign off before any task
+              enters the dataset — automation can flag issues, but the final inclusion decision is always human.
+            </p>
+            <p>
+              The 460-task security split was the most complex to build. The 227 paired safe/unsafe
+              tasks came from MIT 6.858 <em>Computer Systems Security</em> lecture content spanning
+              20+ topics — buffer overflows, symbolic execution, web security, Spectre, and more.
+              For each lecture, the process identified 2–4 formalizable security concepts and generated
+              both a vulnerable and a safe version, verifying that both model the same underlying
+              mechanism, not just superficially related bugs.
+            </p>
+            <p>
+              The hardest curation judgment is theorem quality. The most common failure is
+              <strong>duplication</strong> — two properties with different names but identical statements —
+              and <strong>vacuity</strong> — theorems that hold for any implementation, not just the correct one.
+              The rubric requires at least three semantically distinct property shapes per task,
+              and this single requirement most often sends a draft back for revision.
+            </p>
+          </section>
+
+          <section>
             <h2>How We Score a Solution</h2>
             <!-- <figure class="post-header-figure">
               <img src="../../figs/veribench_eval.png" alt="VeriBench evaluation graphic" />
@@ -642,31 +667,6 @@ theorem correctnessThm (a b : Nat) :
                 <p>IC1 = 1, IC2 = 1, TC1 high — compiles, closes, and captures the right specification. Rare in practice.</p>
               </div>
             </div>
-          </section>
-
-          <section>
-            <h2>How We Built the Dataset</h2>
-            <p>
-              Every task went through a three-stage pipeline: an AI first draft (o3 generates
-              the Lean artifact following the 9-section schema), a human curator review against a
-              written rubric, and Lean kernel compilation. A human must sign off before any task
-              enters the dataset — automation can flag issues, but the final inclusion decision is always human.
-            </p>
-            <p>
-              The 460-task security split was the most complex to build. The 227 paired safe/unsafe
-              tasks came from MIT 6.858 <em>Computer Systems Security</em> lecture content spanning
-              20+ topics — buffer overflows, symbolic execution, web security, Spectre, and more.
-              For each lecture, the process identified 2–4 formalizable security concepts and generated
-              both a vulnerable and a safe version, verifying that both model the same underlying
-              mechanism, not just superficially related bugs.
-            </p>
-            <p>
-              The hardest curation judgment is theorem quality. The most common failure is
-              <strong>duplication</strong> — two properties with different names but identical statements —
-              and <strong>vacuity</strong> — theorems that hold for any implementation, not just the correct one.
-              The rubric requires at least three semantically distinct property shapes per task,
-              and this single requirement most often sends a draft back for revision.
-            </p>
           </section>
 
           <section>
