@@ -48,7 +48,7 @@
           for AI Coding Agents
           </h1>
           <p class="lede">
-            VeriBench is an <em>end-to-end</em>benchmark for testing whether AI coding agents can do
+            VeriBench is an <em>end-to-end</em> benchmark for testing whether AI coding agents can do
             more than write code that looks right. The goal is to push toward
             agents that can produce code with real, checkable guarantees, and
             ultimately make code generation more <strong>trustworthy</strong>.
@@ -85,7 +85,6 @@
                   says more of the right thing.
                 </p>
               </div>
-              <div class="interactive-badge">Client-side demo</div>
             </div>
             <div class="interactive-nav">
               <div>
@@ -187,10 +186,6 @@ theorem correctnessThm (a b : Nat) :
             </div>
           </section>
 
-          <figure class="post-header-figure intro-figure">
-            <img src="./figs/task_pipeline.png" alt="VeriBench task pipeline" />
-          </figure>
-
           <!-- <figure class="post-header-figure">
             <img src="./figs/veribench_graphic_2.png" alt="VeriBench overview graphic (2)" />
           </figure> -->
@@ -217,6 +212,9 @@ theorem correctnessThm (a b : Nat) :
               model could pass the available tests and still be wrong in ways
               the benchmark did not observe.
             </p>
+            <figure class="post-header-figure intro-figure">
+            <img src="./figs/task_pipeline.png" alt="VeriBench task pipeline" />
+          </figure>
             <p>
               <strong>VeriBench asks a harder question: can an agent take a Python
               program, turn it into Lean 4, and state correctness claims that
@@ -329,6 +327,21 @@ theorem correctnessThm (a b : Nat) :
             <figure class="post-header-figure">
               <img src="./figs/dataset_map_2.png" alt="Dataset Map" />
             </figure>
+            <p>
+              VeriBench is not a tiny toy set. The full release contains 884
+              tasks. A five-split canonical core spans introductory
+              programs, classical algorithms, HumanEval-style functions, Python
+              standard-library code, and a large security-focused subset.
+            </p>
+            <p>
+              In the repo, these show up as familiar splits like
+              <code>easy_set</code>, <code>cs_set</code>,
+              <code>humaneval_set</code>, <code>real_code</code>,
+              <code>security_6858</code>, and <code>security_python</code>.
+              Each Python file is paired with a matching Lean target in a
+              mirrored directory tree, so the benchmark is easy to inspect and
+              extend.
+            </p>
             <div class="dataset-hover" aria-labelledby="dataset-hover-title">
               <div class="dataset-hover-head">
                 <h3 id="dataset-hover-title">Explore The Dataset</h3>
@@ -392,21 +405,6 @@ theorem correctnessThm (a b : Nat) :
                 </div>
               </div>
             </div>
-            <p>
-              VeriBench is not a tiny toy set. The full release contains 884
-              tasks. A five-split canonical core spans introductory
-              programs, classical algorithms, HumanEval-style functions, Python
-              standard-library code, and a large security-focused subset.
-            </p>
-            <p>
-              In the repo, these show up as familiar splits like
-              <code>easy_set</code>, <code>cs_set</code>,
-              <code>humaneval_set</code>, <code>real_code</code>,
-              <code>security_6858</code>, and <code>security_python</code>.
-              Each Python file is paired with a matching Lean target in a
-              mirrored directory tree, so the benchmark is easy to inspect and
-              extend.
-            </p>
             <p>
               On top of the canonical core, the release adds a 282-task
               high-assurance-inspired expansion across 14 domains, including
@@ -544,7 +542,7 @@ theorem correctnessThm (a b : Nat) :
             </div>
             <p>
               The schema separates executable behavior (the implementation and
-              tests), admissible inputs (the Pre-condition), atomic proof
+              tests), admissible inputs (the pre-condition), atomic proof
               obligations (the property theorems), and bundled correctness claims.
               This structure is what makes VeriBench's evaluation partial-credit:
               even if an agent cannot prove everything, we can measure how much
@@ -767,41 +765,7 @@ theorem correctnessThm (a b : Nat) :
               producing Lean files that <em>compile</em> than Lean files that
               capture the right theorem obligations.
             </p>
-            <p>
-              On the directly comparable benchmark runs in the paper, Codex
-              leads with an agent-skill score of about <strong>0.29</strong>,
-              Claude Code follows at about <strong>0.22</strong>, and
-              Leanstral v2 lands at about <strong>0.10</strong>. Those are not
-              disaster-level numbers, but they are far from what we would want
-              from an end-to-end formal verification system.
-            </p>
-            <p>
-              The more interesting pattern is deeper than the ranking itself.
-              Codex and Claude Code can often produce files that typecheck
-              cleanly. In other words, they can generate Lean that looks
-              structurally coherent. But when we ask whether the generated
-              theorem statements actually cover the gold reference, the scores
-              remain strikingly low.
-            </p>
-            <p>
-              In the paper, overall theorem coverage stays at or below about
-              <strong>0.156</strong> across the evaluated agents, and for the
-              strongest headline agents it stays at or below about
-              <strong>0.105</strong>. That means the real bottleneck is not just
-              proof search. It is getting the model to state the <em>right
-              claims</em> in the first place.
-            </p>
-            <p>
-              Just as importantly, the gold-side quality term stays roughly
-              stable across agents, at about <strong>0.72 to 0.74</strong>. That
-              means the ordering is not being driven by one model getting an
-              easier slice of the benchmark. The benchmark can still be
-              imperfect, but the main headline is agent-side: current systems
-              are struggling to formulate theorem sets that really match the
-              intended specification.
-            </p>
-
-            <div class="results-table-wrap">
+             <div class="results-table-wrap">
               <table class="results-table">
                 <thead>
                   <tr>
@@ -851,6 +815,39 @@ theorem correctnessThm (a b : Nat) :
                 </tbody>
               </table>
             </div>
+            <p>
+              On the directly comparable benchmark runs in the paper, Codex
+              leads with an agent-skill score of about <strong>0.29</strong>,
+              Claude Code follows at about <strong>0.22</strong>, and
+              Leanstral v2 lands at about <strong>0.10</strong>. Those are not
+              disaster-level numbers, but they are far from what we would want
+              from an end-to-end formal verification system.
+            </p>
+            <p>
+              The more interesting pattern is deeper than the ranking itself.
+              Codex and Claude Code can often produce files that typecheck
+              cleanly. In other words, they can generate Lean that looks
+              structurally coherent. But when we ask whether the generated
+              theorem statements actually cover the gold reference, the scores
+              remain strikingly low.
+            </p>
+            <p>
+              In the paper, overall theorem coverage stays at or below about
+              <strong>0.156</strong> across the evaluated agents, and for the
+              strongest headline agents it stays at or below about
+              <strong>0.105</strong>. That means the real bottleneck is not just
+              proof search. It is getting the model to state the <em>right
+              claims</em> in the first place.
+            </p>
+            <p>
+              Just as importantly, the gold-side quality term stays roughly
+              stable across agents, at about <strong>0.72 to 0.74</strong>. That
+              means the ordering is not being driven by one model getting an
+              easier slice of the benchmark. The benchmark can still be
+              imperfect, but the main headline is agent-side: current systems
+              are struggling to formulate theorem sets that really match the
+              intended specification.
+            </p>
 <!-- 
             <p class="figure-note">
               Blog version of the headline results table, adapted from

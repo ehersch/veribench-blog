@@ -52,17 +52,13 @@ body {
   font-size: 18px;
   color: var(--text);
   background:
-    radial-gradient(
-      circle at top left,
-      var(--bg-radial-1),
-      transparent 26%
-    ),
-    radial-gradient(
-      circle at top right,
-      var(--bg-radial-2),
-      transparent 24%
-    ),
-    linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    radial-gradient(circle at top left, var(--bg-radial-1), transparent 26%),
+    radial-gradient(circle at top right, var(--bg-radial-2), transparent 24%),
+    linear-gradient(
+      180deg,
+      var(--bg-gradient-start) 0%,
+      var(--bg-gradient-end) 100%
+    );
   line-height: 1.6;
 }
 
@@ -140,10 +136,18 @@ html[data-theme="dark"] .topbar-logos img {
   opacity: 0.9;
 }
 
-.topbar-logos img.block-s { height: 48px; }
-.topbar-logos img.susig   { height: 28px; }
-.topbar-logos img.stair   { height: 64px; }
-.topbar-logos img.sail    { height: 40px; }
+.topbar-logos img.block-s {
+  height: 48px;
+}
+.topbar-logos img.susig {
+  height: 28px;
+}
+.topbar-logos img.stair {
+  height: 64px;
+}
+.topbar-logos img.sail {
+  height: 40px;
+}
 
 .nav {
   display: flex;
@@ -415,6 +419,11 @@ html:not([data-theme="dark"]) .post-affiliation-logos img {
   gap: 1rem;
   align-items: end;
   margin-bottom: 1rem;
+}
+
+.interactive-demo-header > div:first-child {
+  flex: 0 1 44rem;
+  max-width: 44rem;
 }
 
 .interactive-demo-header h2,
@@ -916,11 +925,22 @@ html[data-theme="dark"] .code-block.lean {
   border: 1px solid rgba(95, 211, 186, 0.16);
 }
 
-html[data-theme="dark"] .code-block .comment { color: #7fbd98; }
-html[data-theme="dark"] .code-block .keyword { color: #8ad4ff; }
-html[data-theme="dark"] .code-block .type    { color: #ffd580; }
-html[data-theme="dark"] .code-block .string  { color: #ffb86c; }
-html[data-theme="dark"] .code-block .warning { color: #ff8e8e; font-weight: 700; }
+html[data-theme="dark"] .code-block .comment {
+  color: #7fbd98;
+}
+html[data-theme="dark"] .code-block .keyword {
+  color: #8ad4ff;
+}
+html[data-theme="dark"] .code-block .type {
+  color: #ffd580;
+}
+html[data-theme="dark"] .code-block .string {
+  color: #ffb86c;
+}
+html[data-theme="dark"] .code-block .warning {
+  color: #ff8e8e;
+  font-weight: 700;
+}
 
 .callout {
   padding: 1rem 1.1rem;
@@ -931,7 +951,7 @@ html[data-theme="dark"] .code-block .warning { color: #ff8e8e; font-weight: 700;
 
 .metric-flow {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
   margin: 1.25rem 0 1.5rem;
 }
