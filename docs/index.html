@@ -538,6 +538,17 @@ theorem correctnessThm (a b : Nat) :
               final score should stay low instead of hiding the failure.
             </div>
 
+          </section>
+          <section>
+            <h2>Human Calibration</h2>
+
+            <p>
+              Human raters are given the same evaluation guidelines as the LLM judge and asked
+              to score candidate Lean files against gold reference Lean files. We then compare
+              those human scores with the judge's scores to measure how well the judge tracks
+              human judgment.
+            </p>
+
             <figure class="post-header-figure" style="margin-top:1.5rem;">
               <img src="./figs/calibration.png" alt="Human calibration" />
             </figure>
@@ -545,6 +556,8 @@ theorem correctnessThm (a b : Nat) :
               Theorem coverage (TC1) is estimated by an LLM judge calibrated against five human raters.
               The held-out Pearson correlation is about <strong>0.70</strong> — strong enough to make
               the judge a practical proxy for semantic coverage at benchmark scale.
+              The judge is fit on human evaluation data and then calibrated to those scores so it better
+              reflects variation in human judgment.
             </p>
 
             <div class="callout">
@@ -828,7 +841,7 @@ def safe_copy(dst: bytearray, src: bytearray):
     if len(src) > len(dst):
         raise ValueError("source longer than destination")
     dst[:len(src)] = src`,
-            aTitle: "Theorem misses the safety property",
+            aTitle: "Misses safety property",
             aChoice: "Lower score",
             aChoiceClass: "other",
             aCode: `-- Unsafe version: spec says nothing about overflow
@@ -837,21 +850,21 @@ def unsafeCopy (dst src : List Nat) : List Nat := src
 theorem correctnessThm (dst src : List Nat) :
   unsafeCopy dst src = src := by rfl`,
             aScore: "0.12",
-            bTitle: "Captures the safety pre-condition",
+            bTitle: "Captures safety condition",
             bChoice: "Preferred",
             bChoiceClass: "best",
             bCode: `def safeCopy (dst src : List Nat) : Option (List Nat) :=
   if src.length ≤ dst.length then some src else none
 
 -- Key property: copy only succeeds when src fits
-theorem safety_prop (dst src : List Nat) :
-    safeCopy dst src = none ↔ src.length > dst.length := by
+theorem correctnessThm (dst src : List Nat) :
+  safeCopy dst src = none ↔ src.length > dst.length := by
   simp [safeCopy]; omega`,
             bScore: "0.78",
             winner: "Candidate B",
-            pillText: "Safety pre-condition captured",
+            pillText: "Safety condition captured",
             pillClass: "good",
-            summary: "The unsafe version silently ignores the overflow condition. Candidate B states and proves the safety property — that a copy only succeeds when the source fits in the destination.",
+            summary: "Candidate B wins because it states and proves the key safety condition instead of ignoring overflow behavior.",
             alignment: "High",
             theorems: "Strong",
             coverage: "High",
