@@ -257,7 +257,7 @@ theorem correctnessThm (a b : Nat) :
               So our evaluation looks beyond text matching. We check whether the
               file compiles, whether it contains nontrivial formal content, and
               whether its theorems cover the gold reference specification. When
-              exact comparison is too brittle, we use a calibrated semantic
+              exact comparison is too brittle, we use a human-audited semantic
               judge to estimate theorem coverage. That gives us a practical way
               to measure the gap between "looks formal" and "actually says the
               right thing."
@@ -271,15 +271,16 @@ theorem correctnessThm (a b : Nat) :
             </figure>
             <p>
               VeriBench is not a tiny toy set. The full release contains 884
-              tasks. A five-split canonical core spans introductory
+              paired Python-to-Lean tasks: a 602-task canonical core plus a
+              282-task high-assurance expansion. The canonical core spans introductory
               programs, classical algorithms, HumanEval-style functions, Python
               standard-library code, and a large security-focused subset.
             </p>
             <p>
               In the repo, these show up as familiar splits like
               <code>easy_set</code>, <code>cs_set</code>,
-              <code>humaneval_set</code>, <code>real_code</code>,
-              <code>security_6858</code>, and <code>security_python</code>.
+              <code>humaneval_set</code>, <code>realcode_set</code>,
+              <code>security_set</code>, and the high-assurance expansion splits.
               Each Python file is paired with a matching Lean target in a
               mirrored directory tree, so the benchmark is easy to inspect and
               extend.
@@ -550,14 +551,13 @@ theorem correctnessThm (a b : Nat) :
             </p>
 
             <figure class="post-header-figure" style="margin-top:1.5rem;">
-              <img src="../../figs/calibration.png" alt="Human calibration" />
+              <img src="../../figs/calibration.png" alt="Human judge audit" />
             </figure>
             <p>
-              Theorem coverage (TC1) is estimated by an LLM judge calibrated against five human raters.
-              The held-out Pearson correlation is about <strong>0.70</strong> — strong enough to make
-              the judge a practical proxy for semantic coverage at benchmark scale.
-              The judge is fit on human evaluation data and then calibrated to those scores so it better
-              reflects variation in human judgment.
+              Theorem coverage (TC1) is estimated by the paper's deployed LLM coverage judge.
+              Separately, a GPT-5.3-Codex CLI rubric check against the human-label pool reaches
+              raw Pearson about <strong>0.61</strong>, with weaker rank correlations.
+              We treat this as an alignment audit, not as a claim that the deployed scorer has been fit to human labels.
             </p>
 
             <div class="callout">
@@ -707,7 +707,7 @@ theorem correctnessThm (a b : Nat) :
             <p>
               <strong>The next step is not just to build stronger proof search.</strong> It is to
               build agents that formulate better specifications, state better
-              theorems, and improve under human-calibrated oversight at scale.
+              theorems, and improve under human-audited oversight at scale.
               If VeriBench is useful, it will be because it gives that next
               generation of verifiable coding agents a concrete target to beat.
             </p>
